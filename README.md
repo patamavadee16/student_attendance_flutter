@@ -39,6 +39,6 @@ Flutter project.
       package="com.example.student_attendance">
       <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" _/> 
       <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> 
-      <application <br />
+      <application
        android:requestLegacyExternalStorage="true">
 ```
