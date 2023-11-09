@@ -13,7 +13,7 @@ Flutter project.
       minSdkVersion 21 
       targetSdkVersion 30 
     } 
-  } <br />
+  }
     dependencies { 
       implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly-SNAPSHOT' 
       implementation 'org.tensorflow:tensorflow-lite-select-tf-ops:0.0.0-nightly-SNAPSHOT' 
