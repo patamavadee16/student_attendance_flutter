@@ -1,16 +1,44 @@
 # student_attendance
-
-A new Flutter project.
-
+Flutter project.
 ## Getting Started
+- new folder assets and upload model , lable file
+- upload file install_tflite.bat and run this file 
+- edit file pubspec.yaml  (dependencies) and assets file
+- creat android app on firebase project  and follow the steps
+- add these in android/app/build.gradle like this <br />
+```
+   android { 
+      compileSdkVersion 33
+      defaultConfig { 
+      minSdkVersion 21 
+      targetSdkVersion 30 
+    } 
+  }
+    dependencies { 
+      implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly-SNAPSHOT' 
+      implementation 'org.tensorflow:tensorflow-lite-select-tf-ops:0.0.0-nightly-SNAPSHOT' 
+    }
+```
+-  setup file gradle.properties like this <br />
+```
+    android.useAndroidX=true
+    android.enableJetifier=true
+    org.gradle.jvmargs=-Xmx4608m
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
+- edit these in android/build.gradle like this <br />
+```
+   dependencies {
+        classpath 'com.android.tools.build:gradle:7.1.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+```
+- add these in android/app/src/AndroidManifest.xml like this <br />
+```
+    <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.example.student_attendance">
+      <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" _/> 
+      <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> 
+      <application
+       android:requestLegacyExternalStorage="true">
+```
