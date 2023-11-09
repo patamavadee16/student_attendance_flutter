@@ -164,7 +164,7 @@ class _HomeState extends State<Home> {
                       ),
                       child: const Icon(Icons.addchart, size: 55,color: Colors.white,),
                     ),
-                    SizedBox(width: 20,),
+                    const SizedBox(width: 20,),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
