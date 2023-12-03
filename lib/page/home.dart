@@ -10,6 +10,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,9 +21,9 @@ class _HomeState extends State<Home> {
       body:
        Center(
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: 50),
+            
             SizedBox(
               height: 300.0, 
               width: 350, 
@@ -57,21 +58,28 @@ class _HomeState extends State<Home> {
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
+                      
                       height: 100, 
                       width: 300, 
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(  
-                          color: const Color(0xFFFDF3ED) ,
-                          borderRadius: BorderRadius.circular(25.0), 
-                          boxShadow: const [ 
-                            BoxShadow( 
-                              color: Colors.grey , 
-                              blurRadius: 2.0, 
-                              offset: Offset(2.0,2.0) 
-                            ) 
-                          ] 
-                        )
-                        
+                      child: Container(
+                        child: DecoratedBox(
+                      
+                          decoration: BoxDecoration(  
+                            color: const Color(0xFFFDF3ED) ,
+                            borderRadius: BorderRadius.circular(25.0), 
+                            boxShadow: const [ 
+                              BoxShadow( 
+                                color: Colors.grey , 
+                                blurRadius: 2.0, 
+                                offset: Offset(2.0,2.0) 
+                              ) 
+                            ] 
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            child: Text('ผู้สอน : ')),
+                          
+                        ),
                       ),
                     )
                 ])

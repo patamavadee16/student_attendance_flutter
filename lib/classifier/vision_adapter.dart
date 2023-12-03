@@ -23,10 +23,15 @@ class VisionAdapter  {
   List<Face> faces = [];
   List<ImageLabel> labels = [];
   List<TfResult> results = [];
-  // List<String> multiLabel = [];
+  List<TfResult> results2 = [];
+  List<TfResult> results3 = [];
+
   late FaceDetector _faceDetector;
   late ImageLabeler _imageLabeler;
   Classifier? _tflite;
+    List<String> multiLabel = [];
+        List<String> multiLabel2 = [];
+            List<String> multiLabel3 = [];
 
   VisionAdapter(){
     _faceDetector = FaceDetector(
@@ -51,32 +56,24 @@ class VisionAdapter  {
     if (_imageLabeler != null) _imageLabeler.close();
   }
 
-  Future<void> detect(File imagefile) async {
-    // final pres = DateTime.now().millisecondsSinceEpoch;
-
-    // print("detect");
+  Future<void> detect(File imagefile,String no) async {
     try {
       if (await imagefile.exists()) {
-        // print('-- START');
         final inputImage = InputImage.fromFile(imagefile);
 
         if(type==VisionType.FACE || type==VisionType.FACE2) {
           faces = await _faceDetector.processImage(inputImage);
-          // print("face");
 
         } else if(type==VisionType.TENSOR2) {
           List<Rect> rects = [];
           faces = await _faceDetector.processImage(inputImage);
           for (Face f in faces) {
             rects.add(f.boundingBox);
-            // print(rects.length);
           }
-          // print('results');
-          // print(type);
+        if(no=='1'){
           results.clear();
-          // multiLabel.clear();
+          multiLabel.clear();
           final File cropfile = File('${(await getTemporaryDirectory()).path}/crop.jpg');
-          // print(cropfile);
           final byteData = imagefile.readAsBytesSync();
           imglib.Image? srcimg = imglib.decodeImage(byteData);
 
@@ -88,13 +85,67 @@ class VisionAdapter  {
             res.rect = r1;
             if(res.outputs.length>0)
               results.add(res);
-      //         final pre = DateTime.now().millisecondsSinceEpoch;
-      // print('Time to detect image: $pre ms');
           }
-          // print("results.length :"+results.length.toString());
+         for (TfResult res in results) {
+          
+            String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
+            multiLabel.add(res.outputs[0].label);
+
+
+          }
+        }else if(no=='2'){
+                results2.clear();
+          multiLabel2.clear();
+          final File cropfile = File('${(await getTemporaryDirectory()).path}/crop.jpg');
+          final byteData = imagefile.readAsBytesSync();
+          imglib.Image? srcimg = imglib.decodeImage(byteData);
+
+          for (Rect r1 in rects) {
+            r1 = r1.inflate(4.0);
+            imglib.Image crop = imglib.copyCrop(srcimg!, r1.left.toInt(), r1.top.toInt(), r1.width.toInt(), r1.height.toInt());
+            await cropfile.writeAsBytes(imglib.encodeJpg(crop));
+            TfResult res = await _tflite!.predict(crop);
+            res.rect = r1;
+            if(res.outputs.length>0)
+              results2.add(res);
+          }
+         for (TfResult res in results2) {
+          
+            String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
+            multiLabel2.add(res.outputs[0].label);
+
+
+          }
+        }else if(no=='3'){
+                  results3.clear();
+          multiLabel3.clear();
+          final File cropfile = File('${(await getTemporaryDirectory()).path}/crop.jpg');
+          final byteData = imagefile.readAsBytesSync();
+          imglib.Image? srcimg = imglib.decodeImage(byteData);
+
+          for (Rect r1 in rects) {
+            r1 = r1.inflate(4.0);
+            imglib.Image crop = imglib.copyCrop(srcimg!, r1.left.toInt(), r1.top.toInt(), r1.width.toInt(), r1.height.toInt());
+            await cropfile.writeAsBytes(imglib.encodeJpg(crop));
+            TfResult res = await _tflite!.predict(crop);
+            res.rect = r1;
+            if(res.outputs.length>0)
+              results3.add(res);
+          }
+         for (TfResult res in results3) {
+          
+            String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
+            multiLabel3.add(res.outputs[0].label);
+
+
+          }
         }
+        
+        }
+        
         print('-- END');
       }
+
     } on Exception catch (e) {
       print('-- Exception ' + e.toString());
     }
@@ -108,11 +159,16 @@ class VisionPainter extends CustomPainter {
   late Size screenSize;
   double scale = 1.0;
   final ui.Image image;
+  late String no;
 
-  VisionPainter(VisionAdapter vision, Size cameraSize, Size screenSize,this.image){
+ 
+
+  VisionPainter(VisionAdapter vision, Size cameraSize, Size screenSize,this.image,String no){
     this.vision = vision;
     this.cameraSize = cameraSize;
     this.screenSize = screenSize;
+    this.no=no;
+    
   }
 
   Paint _paint = Paint();
@@ -129,23 +185,7 @@ class VisionPainter extends CustomPainter {
     _paint.style = PaintingStyle.stroke;
     _paint.color = COLOR1;
     _paint.strokeWidth = 2.0;
-
-//     double sw = screenSize.width;
-//     double sh = screenSize.height;
-//     double dw = sw>sh ? sw : sh;
-//     double dh = sw>sh ? sh : sw;
-//     print("pain2   "+screenSize.height.toString()+ "   W:"+screenSize.width.toString());
-// print("dh   "+dh.toString()+ "   dW:"+dw.toString());
-//     // scale = dw/dh < 16.0/9.0 ? dw / cameraSize.width : dh / cameraSize.height;
-//     // _canvas.scale(scale);
-//     print("scale"+scale.toString());
-//     if(size.width>size.height){
-//       _textTop = 200;
-//       _textLeft = 40;
-//     } else {
-//       _textTop = 300;
-//       _textLeft = 80;
-//     }
+                                                                                                                                                                     
 if (vision.type == VisionType.TENSOR) {
       if (vision.results.length == 0)
         return;
@@ -159,18 +199,33 @@ if (vision.type == VisionType.TENSOR) {
       }
 
     } else if (vision.type == VisionType.TENSOR2) {
-      // if (vision.results.length == 0)
-      //   return;
+
             canvas.drawImage(image, Offset.zero, Paint());
+            if(no=='1'){
             for (TfResult res in vision.results) {
             canvas.drawRect(res.rect, _paint);
-            String s = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
-            // vision.multiLabel.add(res.outputs[0].label);
-            // print(vision.multiLabel);
-            drawText(Offset(res.rect.left, res.rect.top - _fontHeight), s, _fontSize);
+            String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
+            drawText(Offset(res.rect.left, res.rect.top - _fontHeight), outputLabel, _fontSize);
+
           }
+            }else if(no=='2'){
+                       for (TfResult res in vision.results2) {
+            canvas.drawRect(res.rect, _paint);
+            String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
+            drawText(Offset(res.rect.left, res.rect.top - _fontHeight), outputLabel, _fontSize);
+
+          }
+            }else if(no=='3'){
+                          for (TfResult res in vision.results3) {
+            canvas.drawRect(res.rect, _paint);
+            String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
+            drawText(Offset(res.rect.left, res.rect.top - _fontHeight), outputLabel, _fontSize);
+
+          }
+            }
+
       }
-      // print(vision.multiLabel);
+
 
   }
   /// Rect
@@ -197,9 +252,6 @@ if (vision.type == VisionType.TENSOR) {
     );
     textPainter.layout();
     textPainter.paint(_canvas, offset);  
-        // print("score and label: "+text.toString());
-        // print(offset);
-        // print(_canvas);
   }
 
   @override

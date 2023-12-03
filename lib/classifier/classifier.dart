@@ -53,13 +53,6 @@ abstract class Classifier {
       _inputShape = interpreter.getInputTensor(0).shape;
       _probabilityProcessor =
           TensorProcessorBuilder().add(postProcessNormalizeOp).build();
-      // print(modelName);
-      // print("--------------------------------------------------------------------");
-      // print('-- outputTensors length='+outputTensors.length.toString());
-      // print('-- outputTensor[0] shape='+outputTensors[0].shape.toString()); 
-      // print('-- outputTensor[0] type='+outputTensors[0].type.toString()); 
-      // print('-- outputTensor[0] name='+outputTensors[0].name); //Identity
-      // print("--------------------------------------------------------------------");
       /// load labels
       final labelData = await rootBundle.loadString('assets/labelscpe.txt');
       final labelList = labelData.split('\n');
@@ -67,13 +60,13 @@ abstract class Classifier {
       init = true;
     } on Exception catch (e) {
       print('-- initModel '+e.toString());
+
     }
     return init;
   }
 
   // square image
   TensorImage getProcessedImage(TensorImage inputImage) {
-    // print('-- TensorImage '+inputImage.width.toString() +' '+ inputImage.height.toString());
     int cropSize = min(inputImage.height, inputImage.width);
     ImageProcessor? imageProcessor = ImageProcessorBuilder()
       // .add(ResizeWithCropOrPadOp(cropSize, cropSize)) // Center crop
@@ -89,23 +82,17 @@ abstract class Classifier {
     }
     TfResult res = TfResult();
     try {
-      // final pres = DateTime.now().millisecondsSinceEpoch;
       TensorImage _inputImage = TensorImage(interpreter.getInputTensor(0).type);
-      // TensorImage _inputImage = TensorImage.fromFile(image);
       _inputImage.loadImage(image);
       _inputImage = getProcessedImage(_inputImage);
-      // final pre = DateTime.now().millisecondsSinceEpoch - pres;
-      // print('Time to load image: $pre ms');
-
       res = await run(_inputImage);
+
     } on Exception catch (e) { 
-        // print('-- detect catch='+e.toString());
     }
-      // print(res.outputs[0].label);
     return res;
   }
     Future<TfResult> run(TensorImage inputImage) async {
-      final runs = DateTime.now().millisecondsSinceEpoch;
+    final runs = DateTime.now().millisecondsSinceEpoch;
     TfResult res = TfResult();
     try {
       final inputs = [inputImage.buffer];
@@ -120,22 +107,12 @@ abstract class Classifier {
             Map<String, double> labeledProb = TensorLabel.fromList(
             _labels, _probabilityProcessor.process(_outputTensorBuffers[0]))
         .getMapWithFloatValue();
-        // final pred = getTopProbability(labeledProb);
         }
       }
     } on Exception catch (e) {
-      // print('-- run Exception='+e.toString());
     }
     res.outputs.sort((b,a) => a.score.compareTo(b.score));
-
-    // final run = DateTime.now().millisecondsSinceEpoch - runs;
-
-    // print('Time to run : $run ms');
-    // sumTime.add(run);
-    // final sum = sumTime.sum;
-    // print('$sum');
-    
-    // print('-- '+res.outputs[0].score.toString()+' '+res.outputs[0].label+' '+res.outputs[1].score.toString()+' '+res.outputs[1].label+"--");
+    print('-- '+res.outputs[0].score.toString()+' '+res.outputs[0].label);
     return res;
     
   }
@@ -149,6 +126,9 @@ class TfOutput {
 class TfResult {
   List<TfOutput> outputs = [];
   Rect rect = Rect.fromLTWH(0,0,0,0);
+  List<TfOutput> get loutputs {
+    return outputs;
+  }
 }
 MapEntry<String, double> getTopProbability(Map<String, double> labeledProb) {
   var pq = PriorityQueue<MapEntry<String, double>>(compare);

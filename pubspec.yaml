@@ -42,6 +42,10 @@ dependencies:
       url: https://github.com/filofan1/tflite_flutter_helper.git
       ref: 783f15e5a87126159147d8ea30b98eea9207ac70
   google_ml_kit: ^0.16.2
+  flutter_speed_dial: ^3.0.5
+  firebase_storage: ^11.5.3
+  cloud_firestore: ^4.13.3
+  dropdown_search: ^5.0.6
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +73,8 @@ flutter:
   assets:
       - assets/senet_model_size.tflite
       - assets/labelscpe.txt
+      - assets/resnet30_quant_model.tflite
+      - assets/pic.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

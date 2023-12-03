@@ -2,6 +2,7 @@ plugins  {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
 }
 
 def localProperties = new Properties()
@@ -58,16 +59,26 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    defaultConfig {
+        multiDexEnabled true
+    }   
 }
 
 flutter {
     source '../..'
 }
-
+configurations.all {
+    resolutionStrategy {
+        force 'com.squareup.okhttp:okhttp:2.7.5'
+        force 'com.squareup.okio:okio:1.17.5'
+    }
+}
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation(platform("com.google.firebase:firebase-bom:32.2.3"))
+    // implementation(platform("com.google.firebase:firebase-bom:32.2.3"))
     implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly-SNAPSHOT'
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation "com.google.firebase:firebase-bom:32.6.0"
     // This dependency adds the necessary TF op support.
     implementation 'org.tensorflow:tensorflow-lite-select-tf-ops:0.0.0-nightly-SNAPSHOT'
 }

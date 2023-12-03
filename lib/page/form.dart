@@ -1,161 +1,965 @@
-
 import 'dart:io';
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'dart:ui';
-import 'package:image/image.dart' as img;
+// import 'package:image/image.dart' as img;
 import 'package:student_attendance/classifier/classifier_quant.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../classifier/classifier.dart';
 import '../classifier/vision_adapter.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
+// import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 class form extends StatefulWidget {
   const form({super.key});
-
   @override
   State<form> createState() => _formState();
 }
 
 class _formState extends State<form> {
+  String dropdownValue = '0';
+  String subject =' ';
   late Classifier _classifier;
-  File? _imageFile;
   bool isLoading = false;
-  ui.Image? _image;
-  Image? _imageWidget;
+  bool isLoading2 = false;
+  bool isLoading3 = false;
+  ui.Image? _image1;
+  ui.Image? _image2;
+  ui.Image? _image3;
+  List<String> multiLabel = [];
   final picker = ImagePicker();
   VisionAdapter _vision = VisionAdapter();
   TfResult? tflite;
-   @override
+  final List _products = [];
+  final _firestoreInstance = FirebaseFirestore.instance;
+  fetchProducts() async {
+    QuerySnapshot qn = await _firestoreInstance.collection("subjects").get();
+    setState(() {
+      for (int i = 0; i < qn.docs.length; i++) {
+        _products.add({
+          "code": qn.docs[i]["code"],
+        });
+      }
+      print(_products);
+    });
+
+    return qn.docs;
+  }
+
+  @override
   void initState() {
     super.initState();
     _classifier = ClassifierQuant();
+    fetchProducts();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFDF3ED),
-      appBar: AppBar(
-        backgroundColor: Color(0xFFEDAB94),
-        
-        title: const Row(
-          children: [
-            Icon(Icons.checklist_rtl,size: 40,color: Colors.brown,),
-            SizedBox(width: 10,),
-            Text("เช็คชื่อเข้าเรียน",style: TextStyle(color: Colors.brown),),
-          ],
-        ),
-      ),
-        floatingActionButton: FloatingActionButton(
-        onPressed:_getImage,
-        tooltip: 'Pick Image',
-        child: Icon(Icons.add_a_photo ,
-          color: const ui.Color.fromARGB(255, 255, 255, 255),),
-        backgroundColor: const ui.Color.fromARGB(245, 240, 97, 5),
-    ),
-       body: isLoading
-        ? Center(
-          child: CircularProgressIndicator())
-        : (_image == null)
-        ? Center(child: Text('no image selected'))
-        : Center(
-          child:  
-          // Container(
-          //           constraints: BoxConstraints(
-          //               maxHeight: MediaQuery.of(context).size.height / 2),
-          //           decoration: BoxDecoration(
-          //             border: Border.all(),
-          //           ),
-          //           child: _imageWidget,
-          //         ),
-          FittedBox(
-          
+      backgroundColor: Color(0xFFEDAB94),
+      // appBar: AppBar(
+      //   backgroundColor: Color(0xFFEDAB94),
+      //   title: const Row(
+      //     children: [
+      //       Icon(
+      //         Icons.checklist_rtl,
+      //         size: 40,
+      //         color: Colors.brown,
+      //       ),
+      //       SizedBox(
+      //         width: 10,
+      //       ),
+      //       Text(
+      //         "เช็คชื่อเข้าเรียน",
+      //         style: TextStyle(color: Colors.brown),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      //     floatingActionButton: FloatingActionButton(
+      //     onPressed:_getImage,
+      //     tooltip: 'Pick Image',
+      //     child: Icon(Icons.add_a_photo ,
+      //       color: const ui.Color.fromARGB(255, 255, 255, 255),),
+      //     backgroundColor: const ui.Color.fromARGB(245, 240, 97, 5),
+      // ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.only(top: 40),
             child: SizedBox(
-              width: _image!.width.toDouble(),
-              height: _image!.height.toDouble(),
-              child: CustomPaint(
-                painter: VisionPainter(_vision,Size(349,349),Size(411, 866.0),_image!),
+              width: MediaQuery.of(context).size.width,
+              height: 200,
+              child: DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Color(0xFFEDAB94),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.arrow_back_ios),
+                        iconSize: 30,
+                      ),
+                      title: const Text(
+                        'เช็คชื่อเข้าเรียน',
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.normal),
+                      ),
+                    ),
+                    // ListTile(
+                    //   leading: Text(
+                    //     'วิชา :$subject',
+                    //     style: const TextStyle(
+                    //         fontSize: 20,
+                    //         color: Colors.white,
+                    //         fontWeight: FontWeight.normal),
+                    //   ),
+                      
+                    // ),
+                    StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('course')
+                            .where('teacher',
+                                isEqualTo: 'อาจารย์.ดร.พิชยพัชยา ศรีคร้าม')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          List<DropdownMenuItem> codeItems = [];
+                          if (!snapshot.hasData) {
+                            const CircularProgressIndicator();
+                          } else {
+                            final codeItem =
+                                snapshot.data?.docs.reversed.toList();
+
+                            codeItems.add(const DropdownMenuItem(
+                                value: '0', child: Text('เลือกวิชา')));
+
+                            for (var code in codeItem!) {
+                              codeItems.add(DropdownMenuItem(
+                                  value: code.id,
+                                  child: Text(code['titleTH'] +
+                                      ' กลุ่ม ' +
+                                      code['sec'])));
+                            }
+                          }
+                          return SizedBox(
+                            child: DropdownButtonFormField(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              borderRadius: BorderRadius.circular(12.0),
+                              decoration: InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(13),
+                                  borderSide: const BorderSide(
+                                      color: ui.Color.fromARGB(255, 255, 255, 255), width: 2),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(13),
+                                  borderSide: const BorderSide(
+                                      color: ui.Color.fromARGB(255, 255, 255, 255),
+                                      width: 3),
+                                ),
+                              ),
+                              items: codeItems,
+                              value: dropdownValue,
+                              onChanged: (codeValue) {
+                                setState(() {
+                                  dropdownValue = codeValue;
+
+                                  // final docRef = FirebaseFirestore.instance
+                                  //     .collection("course")
+                                  //     .doc(dropdownValue);
+
+                                  // docRef.get().then((DocumentSnapshot doc) {
+                                  //   try {
+                                  //     final data = doc.data()
+                                  //         as Map<String, dynamic>;
+
+                                  //     print(data['titleTH']);
+                                  //     subject = data['code'] +
+                                  //         data['titleTH'] +
+                                  //         data['sec'];
+                                  //     // ...
+                                  //   } catch (e) {}
+                                  //   ;
+                                  //   onError:
+                                  //   (e) =>
+                                  //       print("Error getting document: $e");
+                                  // });
+
+                                  print(dropdownValue);
+                                  // subject = codeValue['titleTH'];
+                                });
+                              },
+                              isExpanded:false,
+                            ),
+                          );
+                        }),
+                  ],
+                ),
               ),
             ),
           ),
-        )
+          Expanded(
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                  color: ui.Color.fromARGB(255, 255, 255, 255),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30))),
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      // for ( var i in _products) Text(i.toString()),
+
+                      Container(
+                          child: isLoading
+                              ? const Center(
+                                  child: CircularProgressIndicator(
+                                  backgroundColor: Color(0xFFEDAB94),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    ui.Color.fromARGB(
+                                        255, 255, 255, 255), //<-- SEE HERE
+                                  ),
+                                ))
+                              : (_image1 == null)
+                                  ? Center(
+                                      child: SizedBox(
+                                          height: 120,
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          child: pickImageBtn(context, '1')))
+                                  // SpeedDial( //Speed dial menu
+                                  //     marginBottom: 10, //margin bottom
+                                  //     icon: Icons.menu, //icon on Floating action button
+                                  //     activeIcon: Icons.close, //icon when menu is expanded on button
+                                  //     backgroundColor: Colors.deepOrangeAccent, //background color of button
+                                  //     foregroundColor: Colors.white, //font color, icon color in button
+                                  //     activeBackgroundColor: Colors.deepPurpleAccent, //background color when menu is expanded
+                                  //     activeForegroundColor: Colors.white,
+                                  //     buttonSize: 56.0, //button size
+                                  //     visible: true,
+                                  //     closeManually: false,
+                                  //     curve: Curves.bounceIn,
+                                  //     overlayColor: Colors.black,
+                                  //     overlayOpacity: 0.5,
+                                  //     onOpen: () => print('OPENING DIAL'), // action when menu opens
+                                  //     onClose: () => print('DIAL CLOSED'), //action when menu closes
+
+                                  //     elevation: 8.0, //shadow elevation of button
+                                  //     shape: CircleBorder(), //shape of button
+
+                                  //     children: [
+                                  //       SpeedDialChild( //speed dial child
+                                  //         child: Icon(Icons.accessibility),
+                                  //         backgroundColor: Colors.red,
+                                  //         foregroundColor: Colors.white,
+                                  //         label: 'First Menu Child',
+                                  //         labelStyle: TextStyle(fontSize: 18.0),
+                                  //         onTap: () => print('FIRST CHILD'),
+                                  //         onLongPress: () => print('FIRST CHILD LONG PRESS'),
+                                  //       ),
+                                  //       SpeedDialChild(
+                                  //         child: Icon(Icons.brush),
+                                  //         backgroundColor: Colors.blue,
+                                  //         foregroundColor: Colors.white,
+                                  //         label: 'Second Menu Child',
+                                  //         labelStyle: TextStyle(fontSize: 18.0),
+                                  //         onTap: () => print('SECOND CHILD'),
+                                  //         onLongPress: () => print('SECOND CHILD LONG PRESS'),
+                                  //       ),
+                                  //       SpeedDialChild(
+                                  //         child: Icon(Icons.keyboard_voice),
+                                  //         foregroundColor: Colors.white,
+                                  //         backgroundColor: Colors.green,
+                                  //         label: 'Third Menu Child',
+                                  //         labelStyle: TextStyle(fontSize: 18.0),
+                                  //         onTap: () => print('THIRD CHILD'),
+                                  //         onLongPress: () => print('THIRD CHILD LONG PRESS'),
+                                  //       ),
+
+                                  //       //add more menu item childs here
+                                  //     ],
+                                  //   ),
+
+                                  //  Row(
+                                  //   children: [
+                                  //     IconButton(onPressed: _getImage, icon: Icon(Icons.add_a_photo)),
+                                  //     IconButton(onPressed: _getImageC, icon: Icon(Icons.add_a_photo)),
+                                  //       //  ElevatedButton(
+                                  //       // onPressed: _getImage,
+                                  //       // style: ElevatedButton.styleFrom(
+                                  //       //   backgroundColor: Color(0xFFF7D9C4),
+                                  //       //   shape: RoundedRectangleBorder(
+                                  //       //   borderRadius: BorderRadius.circular(20.0),
+                                  //       //   ),
+                                  //       // ),
+                                  //     //   child: Image.asset('assets/pic.png', width: 40,height: 150,),
+                                  //     // ),
+                                  //     // ElevatedButton(
+                                  //     //   onPressed: _getImage,
+                                  //     //   style: ElevatedButton.styleFrom(
+                                  //     //     backgroundColor: Color(0xFFF7D9C4),
+                                  //     //     shape: RoundedRectangleBorder(
+                                  //     //     borderRadius: BorderRadius.circular(20.0),
+                                  //     //     ),
+                                  //     //   ),
+                                  //     //   child: Image.asset('assets/pic.png', width: 70,height: 150,),
+                                  //     // ),
+                                  //   ],
+                                  // ),
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        FittedBox(
+                                          child: SizedBox(
+                                              width: _image1!.width.toDouble(),
+                                              height:
+                                                  _image1!.height.toDouble(),
+                                              child: CustomPaint(
+                                                painter: VisionPainter(
+                                                    _vision,
+                                                    Size(349, 349),
+                                                    Size(411, 866.0),
+                                                    _image1!,
+                                                    '1'),
+                                              )),
+                                        ),
+                                        SizedBox(
+                                          height: 200,
+                                          child: SingleChildScrollView(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: List.generate(
+                                                  _vision.multiLabel.length,
+                                                  (index) {
+                                                return Text(
+                                                  (index + 1).toString() +
+                                                      '. ' +
+                                                      _vision.multiLabel[index]
+                                                          .toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 20),
+                                                );
+                                              }),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      Container(
+                          child: isLoading2
+                              ? const  Center(
+                                  child: CircularProgressIndicator(
+                                  backgroundColor: Color(0xFFEDAB94),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    ui.Color.fromARGB(
+                                        255, 255, 255, 255), //<-- SEE HERE
+                                  ),
+                                ))
+                              : (_image2 == null)
+                                  ? Center(
+                                      child: SizedBox(
+                                          height: 120,
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          child: pickImageBtn(context, '2')
+                                          // ElevatedButton(
+                                          //   onPressed: _getImage2,
+                                          //   style: ElevatedButton.styleFrom(
+                                          //     backgroundColor: Color(0xFFF7D9C4),
+                                          //     shape: RoundedRectangleBorder(
+                                          //     borderRadius: BorderRadius.circular(20.0),
+                                          //     ),
+                                          //   ),
+                                          //   child: Container(
+                                          //     child: Row(
+                                          //       children: [
+                                          //         Image.asset('assets/pic.png', width: 70,height: 150,),
+                                          //         Text('Pick Image 2')
+                                          //       ],
+                                          //     ),
+                                          //   ),
+                                          // )
+                                          ))
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        FittedBox(
+                                          child: SizedBox(
+                                              width: _image2!.width.toDouble(),
+                                              height:
+                                                  _image2!.height.toDouble(),
+                                              child: CustomPaint(
+                                                painter: VisionPainter(
+                                                    _vision,
+                                                    Size(349, 349),
+                                                    Size(411, 866.0),
+                                                    _image2!,
+                                                    '2'),
+                                              )),
+                                        ),
+                                        SizedBox(
+                                          height: 200,
+                                          child: SingleChildScrollView(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: List.generate(
+                                                  _vision.multiLabel2.length,
+                                                  (index) {
+                                                return Text(
+                                                  (index + 1).toString() +
+                                                      '. ' +
+                                                      _vision.multiLabel2[index]
+                                                          .toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 20),
+                                                );
+                                              }),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      Container(
+                          child: isLoading3
+                              ? const Center(
+                                  child: CircularProgressIndicator(
+                                  backgroundColor: Color(0xFFEDAB94),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    ui.Color.fromARGB(
+                                        255, 255, 255, 255), //<-- SEE HERE
+                                  ),
+                                ))
+                              : (_image3 == null)
+                                  ? Center(
+                                      child: SizedBox(
+                                          height: 120,
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          child: pickImageBtn(context, '3')
+                                          // ElevatedButton(
+                                          //   onPressed: _getImage3,
+                                          //   style: ElevatedButton.styleFrom(
+                                          //     backgroundColor: Color(0xFFF7D9C4),
+                                          //     shape: RoundedRectangleBorder(
+                                          //     borderRadius: BorderRadius.circular(20.0),
+                                          //     ),
+                                          //   ),
+                                          //   child: Container(
+                                          //     child: Row(
+                                          //       children: [
+                                          //         Image.asset('assets/pic.png', width: 70,height: 150,),
+                                          //         Text('Pick Image 3')
+                                          //       ],
+                                          //     ),
+                                          //   ),
+                                          // )
+                                          ))
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        FittedBox(
+                                          child: SizedBox(
+                                         
+                                              width: _image3!.width.toDouble(),
+                                              height:_image3!.height.toDouble(),
+                                              child: CustomPaint(
+                                                painter: VisionPainter(
+                                                    _vision,
+                                                    Size(349, 349),
+                                                    Size(411, 866.0),
+                                                    _image3!,
+                                                    '3'),
+                                              )),
+                                        ),
+                                        SizedBox(
+                                          height: 200,
+                                          child: SingleChildScrollView(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: List.generate(
+                                                  _vision.multiLabel3.length,
+                                                  (index) {
+                                                return Text(
+                                                  (index + 1).toString() +
+                                                      '. ' +
+                                                      _vision.multiLabel3[index]
+                                                          .toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 20),
+                                                );
+                                              }),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )),
+                      //       Container(
+                      //     child: (_image3 == null)?Center(
+                      //       child: SizedBox(
+                      //         height:100,
+                      //         width:200,
+                      //           child:   FloatingActionButton(
+                      //               onPressed:_getImage,
+                      //               tooltip: 'Pick Image',
+                      //               elevation: 5,
+                      //               shape: RoundedRectangleBorder(
+                      //                 borderRadius: BorderRadius.circular(18),),
+                      //                 child: const Icon(Icons.add_a_photo, color: Colors.white),
+                      //                 backgroundColor: const ui.Color.fromARGB(245, 240, 97, 5),),
+                      //         ),
+                      //     )
+                      //  :FittedBox(
+                      //           child:
+                      //               SizedBox(
+                      //                 width: _image!.width.toDouble(),
+                      //                 height: _image!.height.toDouble(),
+                      //                 child:
+                      //                         CustomPaint(
+                      //                           painter: VisionPainter(_vision,Size(349,349),Size(411, 866.0),_image3!),
+                      //                         )
+                      //               ),
+                      //     ), )
+                      // Center(
+                      //   child: SizedBox(
+                      //     height:100,
+                      //     width:200,
+                      //       child:   FloatingActionButton(
+                      //           onPressed:_getImage,
+                      //           tooltip: 'Pick Image',
+                      //           elevation: 5,
+                      //           shape: RoundedRectangleBorder(
+                      //             borderRadius: BorderRadius.circular(18),),
+                      //             child: const Icon(Icons.add_a_photo, color: Colors.white),
+                      //             backgroundColor: const ui.Color.fromARGB(245, 240, 97, 5),),
+                      //     ),
+                      // ),
+                      // Center(
+                      //   child: SizedBox(
+                      //     height:100,
+                      //     width:200,
+                      //       child:   FloatingActionButton(
+                      //           onPressed:_getImage,
+                      //           tooltip: 'Pick Image',
+                      //           elevation: 5,
+                      //           shape: RoundedRectangleBorder(
+                      //             borderRadius: BorderRadius.circular(18),),
+                      //             child: const Icon(Icons.add_a_photo, color: Colors.white),
+                      //             backgroundColor: const ui.Color.fromARGB(245, 240, 97, 5),),
+                      //     ),
+                      // ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      //  isLoading
+      //   ? Center(
+      //     child: CircularProgressIndicator())
+      //   : (_image == null)
+      //   ? Center(child: Text('no image selected'))
+      //   :
+      //       Column(
+      //         mainAxisAlignment: MainAxisAlignment.start,
+      //         crossAxisAlignment: CrossAxisAlignment.start,
+      //         children: [
+      //           FittedBox(
+      //                       child:
+      //                           SizedBox(
+      //                             width: _image!.width.toDouble(),
+      //                             height: _image!.height.toDouble(),
+      //                             child:
+      //                                     CustomPaint(
+      //                                       painter: VisionPainter(_vision,Size(349,349),Size(411, 866.0),_image!),
+      //                                     )
+      //                           ),
+      //                 ),
+      //                 Column(
+      //                   crossAxisAlignment: CrossAxisAlignment.start,
+      //   children: List.generate(_vision.multiLabel.length, (index) {
+      //     return Text((index+1).toString()+' '+
+      //       _vision.multiLabel[index].toString(),
+      //       style: const TextStyle(fontSize: 20),
+      //     );
+      //   }),
+      // ),
+
+      //         ],
+
+      //   )
     );
   }
+
+  ElevatedButton pickImageBtn(BuildContext context, String no) {
+    return ElevatedButton(
+      onPressed: () => _showSelectionDialog(context, no),
+      style: ElevatedButton.styleFrom(
+        primary: const Color(0xFFFDF3ED).withOpacity(0.9),
+        onPrimary: const Color(0xFFEDAB94),
+        // backgroundColor: Color(0xFFFDF3ED).withOpacity(0.9),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+      ),
+      child: Container(
+        child: Row(
+          children: [
+            Image.asset(
+              'assets/pic.png',
+              width: 70,
+              height: 150,
+            ),
+            SizedBox(
+              width: 50,
+            ),
+            Text('เลือกรูปภาพที่ $no', style: TextPickStyle())
+          ],
+        ),
+      ),
+    );
+  }
+
+  TextStyle TextPickStyle() => TextStyle(
+        color: Colors.black,
+        fontSize: 20,
+      );
+
+  Future<void> _showSelectionDialog(BuildContext context, no) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(15)),
+              backgroundColor: ui.Color.fromARGB(220, 255, 255, 255),
+              title: Text("Select image"),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    GestureDetector(
+                      child: Text("Gallery"),
+                      onTap: () {
+                        _pickGallery(context, no);
+                      },
+                    ),
+                    Padding(padding: EdgeInsets.all(8.0)),
+                    GestureDetector(
+                      child: Text("Camera"),
+                      onTap: () => _pickCamera(context, no),
+                    )
+                  ],
+                ),
+              ));
+        });
+  }
+
   Future<void> requestPermission() async {
-    const permission = Permission.storage;  
+    const permission = Permission.storage;
     if (await permission.isDenied) {
-      print("object");
       await permission.request();
     }
-  }  
-_getImage() async {
-    requestPermission();
-    print("get image");
-    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
-    setState((){
-	    isLoading = true;
-        // _loadImage(File(pickedFile!.path));
-	});
-    // print("Image picker file path - ${pickedFile!.path}");
-      // _imageFile = File(pickedFile!.path);
-      //  await _loadImage(File(pickedFile!.path));
-        //      _imageFile = File(pickedFile!.path);
-             
-        // _loadImage(File(pickedFile!.path));
- 
- if (mounted) {
-      setState(() {
-        _imageFile = File(pickedFile!.path);
-        _loadImage(File(pickedFile!.path));
-        
-
-      });
-    }
-
   }
-  _loadImage(File file) async { 
-    print("load image funtion");
-	  final data = await file.readAsBytes();
-    	  await decodeImageFromList(data).then((value) => setState((){
-    // final start = DateTime.now().millisecondsSinceEpoch ;
 
-
-      isLoading = true;
-		  _image = value;
-      _onDetect(File(file.path));
-        // final stop = DateTime.now().millisecondsSinceEpoch-start ;
-        //     print('Time to run model senet_model_size.tflite $stop ms');
-        //     print('$isLoading');
-		}));
-	  // await decodeImageFromList(data).then((value) => setState(() async{
-    // final start = DateTime.now().millisecondsSinceEpoch ;
-
-
-    //   isLoading = true;
-		//   _image = value;
-    //    await _onDetect(File(file.path));
-    //     final stop = DateTime.now().millisecondsSinceEpoch-start ;
-    //         print('Time to run model senet_model_size.tflite $stop ms');
-    //         print('$isLoading');
-		// }));
-}
-  _onDetect(File _pictureFile) async {
+  Future<void> _pickCamera(BuildContext context, String no) async {
     try {
-        //  _imageFile= File(_pictureFile!.path);
-        // _imageWidget = Image.file( _imageFile!);
-        // img.Image imageInput = img.decodeImage(_imageFile!.readAsBytesSync())!;
-        // await _classifier.predict(imageInput);
-        await _vision.detect(_pictureFile);
-        // var labellist = _vision.multiLabel;
-        // print(labellist);
+      final pickedFile =
+          await ImagePicker().getImage(source: ImageSource.camera);
+
+      final image = await loadImage(File(pickedFile!.path), no);
+
+      setState(() {
+        if (no == '1') {
+          _image1 = image;
+        } else if (no == '2') {
+          _image2 = image;
+        } else if (no == '3') {
+          _image3 = image;
+        }
+      });
+      Navigator.of(context).pop();
+    } catch (e) {}
+  }
+
+  Future<void> _pickGallery(BuildContext context, String no) async {
+    try {
+      final pickedFile =
+          await ImagePicker().getImage(source: ImageSource.gallery);
+      print('course');
+
+      final image = await loadImage(File(pickedFile!.path), no);
+      setState(() {
+        if (no == '1') {
+          _image1 = image;
+        } else if (no == '2') {
+          _image2 = image;
+        } else if (no == '3') {
+          _image3 = image;
+        }
+      });
+      Navigator.of(context).pop();
+    } catch (e) {}
+  }
+
+  Future<ui.Image?> loadImage(File file, String no) async {
+    ui.Image? image;
+    try {
+      final data = await file.readAsBytes();
+      await decodeImageFromList(data).then((value) => setState(() {
+            if (no == '1') {
+              isLoading = true;
+            } else if (no == '2') {
+              isLoading2 = true;
+            } else if (no == '3') {
+              isLoading3 = true;
+            }
+            image = value;
+            _onDetect(File(file.path), no);
+          }));
+    } on Exception catch (e) {
+      print('-- Exception ' + e.toString());
+    }
+    return image;
+    // setState(() => imageStateVarible = image);
+  }
+
+  _onDetect(File _pictureFile, String no) async {
+    try {
+      if (no == '1') {
+        await _vision.detect(_pictureFile, '1');
+      } else if (no == '2') {
+        await _vision.detect(_pictureFile, '2');
+      } else if (no == '3') {
+        await _vision.detect(_pictureFile, '3');
+      }
     } on Exception catch (e) {
       print('-- Exception ' + e.toString());
     }
     setState(() {
-      isLoading = false;
-       
+      if (no == '1') {
+        isLoading = false;
+      } else if (no == '2') {
+        isLoading2 = false;
+      } else if (no == '3') {
+        isLoading3 = false;
+      }
     });
   }
+
+  addUser() {
+    FirebaseFirestore.instance
+        .collection('course')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        print(doc["code"]);
+      });
+    });
+
+    // .then((value) => print("User added successfully!"))
+    // .catchError((error) => print("Failed to add user: $error"));
+  }
+// _getImage() async {
+//     requestPermission();
+//     print("get image");
+//     final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+//     setState((){
+// 	    isLoading = true;
+// 	});
+
+//  if (mounted) {
+//       setState(() {
+//         _imageFile = File(pickedFile!.path);
+
+//         _loadImage(File(pickedFile!.path));
+
+//       });
+//     }
+
+//   }
+//   _getImageC() async {
+//     requestPermission();
+//     print("get image");
+//     final pickedFile = await ImagePicker().getImage(source: ImageSource.camera);
+//     setState((){
+// 	    isLoading = true;
+// 	});
+
+//  if (mounted) {
+//       setState(() {
+//         _imageFile = File(pickedFile!.path);
+
+//         _loadImage(File(pickedFile!.path));
+
+//       });
+//     }
+
+//   }
+//   _getImageCamera(String no) async {
+//     requestPermission();
+//     print("get image");
+//     final pickedFile = await ImagePicker().getImage(source: ImageSource.camera);
+//     setState((){
+// 	    isLoading = true;
+// 	});
+
+//  if (mounted) {
+//       setState(() {
+
+//         // _imageFile = File(pickedFile!.path);
+
+//        final  a =  _loadImageP(File(pickedFile!.path));
+
+//       });
+//     }
+
+//   }
+
+//   Future< ui.Image?>  _loadImageP(File file) async {
+//  final data = await file.readAsBytes();
+//   ui.Image? _image1;
+//     	  await decodeImageFromList(data).then((value) => setState((){
+//       isLoading = true;
+//   _image1 = value;
+
+//       _onDetect(File(file.path));
+//       }));
+//       return  _image1 ;
+//     print("load image funtion");
+// 	  final data = await file.readAsBytes();
+//     	  await decodeImageFromList(data).then((value) => setState((){
+//       isLoading = true;
+
+//   _image = value;
+
+//       _onDetect(File(file.path));
+
+// 		}));
+
+// }
+
+//   _getImage2() async {
+//     requestPermission();
+//     print("get image");
+//     final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+//     setState((){
+// 	    isLoading2 = true;
+// 	});
+
+//  if (mounted) {
+//       setState(() {
+//         _imageFile = File(pickedFile!.path);
+
+//         _loadImage2(File(pickedFile!.path));
+
+//       });
+//     }
+
+//   }
+//     _getImage3() async {
+//     requestPermission();
+//     print("get image");
+//     final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+//     setState((){
+// 	    isLoading3 = true;
+// 	});
+
+//  if (mounted) {
+//       setState(() {
+//         _imageFile = File(pickedFile!.path);
+
+//         _loadImage3(File(pickedFile!.path));
+
+//       });
+//     }
+
+//   }
+//   _loadImage(File file) async {
+//     print("load image funtion");
+// 	  final data = await file.readAsBytes();
+//     	  await decodeImageFromList(data).then((value) => setState((){
+//       isLoading = true;
+
+//   _image1 = value;
+
+//       _onDetect(File(file.path));
+
+// 		}));
+
+// }  _loadImage2(File file) async {
+//     print("load image funtion");
+// 	  final data = await file.readAsBytes();
+//     	  await decodeImageFromList(data).then((value) => setState((){
+//       isLoading2 = true;
+
+//   _image2 = value;
+
+//       _onDetect2(File(file.path));
+
+// 		}));
+
+// }
+//   _loadImage3(File file) async {
+//     print("load image funtion");
+// 	  final data = await file.readAsBytes();
+//     	  await decodeImageFromList(data).then((value) => setState((){
+//       isLoading3 = true;
+
+//   _image3= value;
+
+//       _onDetect3(File(file.path));
+
+// 		}));
+
+// }
+
+  // _onDetect2(File _pictureFile) async {
+  //   try {
+  //       await _vision.detect(_pictureFile,'2');
+  //   } on Exception catch (e) {
+  //     print('-- Exception ' + e.toString());
+  //   }
+  //   setState(() {
+  //     isLoading2 = false;
+
+  //   });
+  // }
+  // _onDetect3(File _pictureFile) async {
+  //   try {
+  //       await _vision.detect(_pictureFile,'3');
+  //   } on Exception catch (e) {
+  //     print('-- Exception ' + e.toString());
+  //   }
+  //   setState(() {
+  //     isLoading3 = false;
+
+  //   });
+  // }
 }
