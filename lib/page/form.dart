@@ -22,7 +22,7 @@ class form extends StatefulWidget {
 
 class _formState extends State<form> {
   String dropdownValue = '0';
-  String subject =' ';
+  String subject = ' ';
   late Classifier _classifier;
   bool isLoading = false;
   bool isLoading2 = false;
@@ -91,10 +91,39 @@ class _formState extends State<form> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.only(top: 40),
+            padding: EdgeInsets.only(top: 25),
             child: SizedBox(
               width: MediaQuery.of(context).size.width,
-              height: 200,
+              height: 60,
+              child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: ui.Color.fromARGB(255, 255, 255, 255),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/logo.png',
+                        width: 70,
+                        height: 60,
+                      ),
+                      Container(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('FACE  RECOGNITION'),
+                          Text('ATTENDANCE')
+                        ],
+                      )),
+                    ],
+                  )),
+            ),
+          ),
+          Container(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 60,
               child: DecoratedBox(
                 decoration: const BoxDecoration(
                   color: Color(0xFFEDAB94),
@@ -117,94 +146,6 @@ class _formState extends State<form> {
                             fontWeight: FontWeight.normal),
                       ),
                     ),
-                    // ListTile(
-                    //   leading: Text(
-                    //     'วิชา :$subject',
-                    //     style: const TextStyle(
-                    //         fontSize: 20,
-                    //         color: Colors.white,
-                    //         fontWeight: FontWeight.normal),
-                    //   ),
-                      
-                    // ),
-                    StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection('course')
-                            .where('teacher',
-                                isEqualTo: 'อาจารย์.ดร.พิชยพัชยา ศรีคร้าม')
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          List<DropdownMenuItem> codeItems = [];
-                          if (!snapshot.hasData) {
-                            const CircularProgressIndicator();
-                          } else {
-                            final codeItem =
-                                snapshot.data?.docs.reversed.toList();
-
-                            codeItems.add(const DropdownMenuItem(
-                                value: '0', child: Text('เลือกวิชา')));
-
-                            for (var code in codeItem!) {
-                              codeItems.add(DropdownMenuItem(
-                                  value: code.id,
-                                  child: Text(code['titleTH'] +
-                                      ' กลุ่ม ' +
-                                      code['sec'])));
-                            }
-                          }
-                          return SizedBox(
-                            child: DropdownButtonFormField(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
-                              borderRadius: BorderRadius.circular(12.0),
-                              decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(13),
-                                  borderSide: const BorderSide(
-                                      color: ui.Color.fromARGB(255, 255, 255, 255), width: 2),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(13),
-                                  borderSide: const BorderSide(
-                                      color: ui.Color.fromARGB(255, 255, 255, 255),
-                                      width: 3),
-                                ),
-                              ),
-                              items: codeItems,
-                              value: dropdownValue,
-                              onChanged: (codeValue) {
-                                setState(() {
-                                  dropdownValue = codeValue;
-
-                                  // final docRef = FirebaseFirestore.instance
-                                  //     .collection("course")
-                                  //     .doc(dropdownValue);
-
-                                  // docRef.get().then((DocumentSnapshot doc) {
-                                  //   try {
-                                  //     final data = doc.data()
-                                  //         as Map<String, dynamic>;
-
-                                  //     print(data['titleTH']);
-                                  //     subject = data['code'] +
-                                  //         data['titleTH'] +
-                                  //         data['sec'];
-                                  //     // ...
-                                  //   } catch (e) {}
-                                  //   ;
-                                  //   onError:
-                                  //   (e) =>
-                                  //       print("Error getting document: $e");
-                                  // });
-
-                                  print(dropdownValue);
-                                  // subject = codeValue['titleTH'];
-                                });
-                              },
-                              isExpanded:false,
-                            ),
-                          );
-                        }),
                   ],
                 ),
               ),
@@ -213,22 +154,25 @@ class _formState extends State<form> {
           Expanded(
             child: DecoratedBox(
               decoration: const BoxDecoration(
-                  color: ui.Color.fromARGB(255, 255, 255, 255),
+                  color: Color(0xFFFDF3ED),
                   borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30))),
+                      topLeft: Radius.circular(35),
+                      topRight: Radius.circular(35))),
               child: Center(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
                       // for ( var i in _products) Text(i.toString()),
-
+                      dropdown(),
+                      const SizedBox(
+                        height: 40,
+                      ),
                       Container(
                           child: isLoading
                               ? const Center(
                                   child: CircularProgressIndicator(
-                                  backgroundColor: Color(0xFFEDAB94),
+                                  backgroundColor: Color(0xFFFDF3ED),
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                     ui.Color.fromARGB(
                                         255, 255, 255, 255), //<-- SEE HERE
@@ -241,85 +185,6 @@ class _formState extends State<form> {
                                           width:
                                               MediaQuery.of(context).size.width,
                                           child: pickImageBtn(context, '1')))
-                                  // SpeedDial( //Speed dial menu
-                                  //     marginBottom: 10, //margin bottom
-                                  //     icon: Icons.menu, //icon on Floating action button
-                                  //     activeIcon: Icons.close, //icon when menu is expanded on button
-                                  //     backgroundColor: Colors.deepOrangeAccent, //background color of button
-                                  //     foregroundColor: Colors.white, //font color, icon color in button
-                                  //     activeBackgroundColor: Colors.deepPurpleAccent, //background color when menu is expanded
-                                  //     activeForegroundColor: Colors.white,
-                                  //     buttonSize: 56.0, //button size
-                                  //     visible: true,
-                                  //     closeManually: false,
-                                  //     curve: Curves.bounceIn,
-                                  //     overlayColor: Colors.black,
-                                  //     overlayOpacity: 0.5,
-                                  //     onOpen: () => print('OPENING DIAL'), // action when menu opens
-                                  //     onClose: () => print('DIAL CLOSED'), //action when menu closes
-
-                                  //     elevation: 8.0, //shadow elevation of button
-                                  //     shape: CircleBorder(), //shape of button
-
-                                  //     children: [
-                                  //       SpeedDialChild( //speed dial child
-                                  //         child: Icon(Icons.accessibility),
-                                  //         backgroundColor: Colors.red,
-                                  //         foregroundColor: Colors.white,
-                                  //         label: 'First Menu Child',
-                                  //         labelStyle: TextStyle(fontSize: 18.0),
-                                  //         onTap: () => print('FIRST CHILD'),
-                                  //         onLongPress: () => print('FIRST CHILD LONG PRESS'),
-                                  //       ),
-                                  //       SpeedDialChild(
-                                  //         child: Icon(Icons.brush),
-                                  //         backgroundColor: Colors.blue,
-                                  //         foregroundColor: Colors.white,
-                                  //         label: 'Second Menu Child',
-                                  //         labelStyle: TextStyle(fontSize: 18.0),
-                                  //         onTap: () => print('SECOND CHILD'),
-                                  //         onLongPress: () => print('SECOND CHILD LONG PRESS'),
-                                  //       ),
-                                  //       SpeedDialChild(
-                                  //         child: Icon(Icons.keyboard_voice),
-                                  //         foregroundColor: Colors.white,
-                                  //         backgroundColor: Colors.green,
-                                  //         label: 'Third Menu Child',
-                                  //         labelStyle: TextStyle(fontSize: 18.0),
-                                  //         onTap: () => print('THIRD CHILD'),
-                                  //         onLongPress: () => print('THIRD CHILD LONG PRESS'),
-                                  //       ),
-
-                                  //       //add more menu item childs here
-                                  //     ],
-                                  //   ),
-
-                                  //  Row(
-                                  //   children: [
-                                  //     IconButton(onPressed: _getImage, icon: Icon(Icons.add_a_photo)),
-                                  //     IconButton(onPressed: _getImageC, icon: Icon(Icons.add_a_photo)),
-                                  //       //  ElevatedButton(
-                                  //       // onPressed: _getImage,
-                                  //       // style: ElevatedButton.styleFrom(
-                                  //       //   backgroundColor: Color(0xFFF7D9C4),
-                                  //       //   shape: RoundedRectangleBorder(
-                                  //       //   borderRadius: BorderRadius.circular(20.0),
-                                  //       //   ),
-                                  //       // ),
-                                  //     //   child: Image.asset('assets/pic.png', width: 40,height: 150,),
-                                  //     // ),
-                                  //     // ElevatedButton(
-                                  //     //   onPressed: _getImage,
-                                  //     //   style: ElevatedButton.styleFrom(
-                                  //     //     backgroundColor: Color(0xFFF7D9C4),
-                                  //     //     shape: RoundedRectangleBorder(
-                                  //     //     borderRadius: BorderRadius.circular(20.0),
-                                  //     //     ),
-                                  //     //   ),
-                                  //     //   child: Image.asset('assets/pic.png', width: 70,height: 150,),
-                                  //     // ),
-                                  //   ],
-                                  // ),
                                   : Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -366,7 +231,7 @@ class _formState extends State<form> {
                       ),
                       Container(
                           child: isLoading2
-                              ? const  Center(
+                              ? const Center(
                                   child: CircularProgressIndicator(
                                   backgroundColor: Color(0xFFEDAB94),
                                   valueColor: AlwaysStoppedAnimation<Color>(
@@ -380,25 +245,7 @@ class _formState extends State<form> {
                                           height: 120,
                                           width:
                                               MediaQuery.of(context).size.width,
-                                          child: pickImageBtn(context, '2')
-                                          // ElevatedButton(
-                                          //   onPressed: _getImage2,
-                                          //   style: ElevatedButton.styleFrom(
-                                          //     backgroundColor: Color(0xFFF7D9C4),
-                                          //     shape: RoundedRectangleBorder(
-                                          //     borderRadius: BorderRadius.circular(20.0),
-                                          //     ),
-                                          //   ),
-                                          //   child: Container(
-                                          //     child: Row(
-                                          //       children: [
-                                          //         Image.asset('assets/pic.png', width: 70,height: 150,),
-                                          //         Text('Pick Image 2')
-                                          //       ],
-                                          //     ),
-                                          //   ),
-                                          // )
-                                          ))
+                                          child: pickImageBtn(context, '2')))
                                   : Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -459,34 +306,16 @@ class _formState extends State<form> {
                                           height: 120,
                                           width:
                                               MediaQuery.of(context).size.width,
-                                          child: pickImageBtn(context, '3')
-                                          // ElevatedButton(
-                                          //   onPressed: _getImage3,
-                                          //   style: ElevatedButton.styleFrom(
-                                          //     backgroundColor: Color(0xFFF7D9C4),
-                                          //     shape: RoundedRectangleBorder(
-                                          //     borderRadius: BorderRadius.circular(20.0),
-                                          //     ),
-                                          //   ),
-                                          //   child: Container(
-                                          //     child: Row(
-                                          //       children: [
-                                          //         Image.asset('assets/pic.png', width: 70,height: 150,),
-                                          //         Text('Pick Image 3')
-                                          //       ],
-                                          //     ),
-                                          //   ),
-                                          // )
-                                          ))
+                                          child: pickImageBtn(context, '3')))
                                   : Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
                                         FittedBox(
                                           child: SizedBox(
-                                         
                                               width: _image3!.width.toDouble(),
-                                              height:_image3!.height.toDouble(),
+                                              height:
+                                                  _image3!.height.toDouble(),
                                               child: CustomPaint(
                                                 painter: VisionPainter(
                                                     _vision,
@@ -519,60 +348,6 @@ class _formState extends State<form> {
                                         ),
                                       ],
                                     )),
-                      //       Container(
-                      //     child: (_image3 == null)?Center(
-                      //       child: SizedBox(
-                      //         height:100,
-                      //         width:200,
-                      //           child:   FloatingActionButton(
-                      //               onPressed:_getImage,
-                      //               tooltip: 'Pick Image',
-                      //               elevation: 5,
-                      //               shape: RoundedRectangleBorder(
-                      //                 borderRadius: BorderRadius.circular(18),),
-                      //                 child: const Icon(Icons.add_a_photo, color: Colors.white),
-                      //                 backgroundColor: const ui.Color.fromARGB(245, 240, 97, 5),),
-                      //         ),
-                      //     )
-                      //  :FittedBox(
-                      //           child:
-                      //               SizedBox(
-                      //                 width: _image!.width.toDouble(),
-                      //                 height: _image!.height.toDouble(),
-                      //                 child:
-                      //                         CustomPaint(
-                      //                           painter: VisionPainter(_vision,Size(349,349),Size(411, 866.0),_image3!),
-                      //                         )
-                      //               ),
-                      //     ), )
-                      // Center(
-                      //   child: SizedBox(
-                      //     height:100,
-                      //     width:200,
-                      //       child:   FloatingActionButton(
-                      //           onPressed:_getImage,
-                      //           tooltip: 'Pick Image',
-                      //           elevation: 5,
-                      //           shape: RoundedRectangleBorder(
-                      //             borderRadius: BorderRadius.circular(18),),
-                      //             child: const Icon(Icons.add_a_photo, color: Colors.white),
-                      //             backgroundColor: const ui.Color.fromARGB(245, 240, 97, 5),),
-                      //     ),
-                      // ),
-                      // Center(
-                      //   child: SizedBox(
-                      //     height:100,
-                      //     width:200,
-                      //       child:   FloatingActionButton(
-                      //           onPressed:_getImage,
-                      //           tooltip: 'Pick Image',
-                      //           elevation: 5,
-                      //           shape: RoundedRectangleBorder(
-                      //             borderRadius: BorderRadius.circular(18),),
-                      //             child: const Icon(Icons.add_a_photo, color: Colors.white),
-                      //             backgroundColor: const ui.Color.fromARGB(245, 240, 97, 5),),
-                      //     ),
-                      // ),
                     ],
                   ),
                 ),
@@ -618,11 +393,110 @@ class _formState extends State<form> {
     );
   }
 
+  StreamBuilder<QuerySnapshot<Object?>> dropdown() {
+    return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('course')
+            .where('teacher', isEqualTo: 'อาจารย์.ดร.พิชยพัชยา ศรีคร้าม')
+            .snapshots(),
+        builder: (context, snapshot) {
+          List<DropdownMenuItem> codeItems = [];
+          List<DropdownMenuItem> secItems = [];
+          if (!snapshot.hasData) {
+            const CircularProgressIndicator();
+          } else {
+            final codeItem = snapshot.data?.docs.reversed.toList();
+            final secItem = snapshot.data?.docs.reversed.toList();
+            codeItems.add(
+                const DropdownMenuItem(value: '0', child: Text('เลือกวิชา')));
+            secItems.add(const DropdownMenuItem(
+                value: '0', child: Text('เลือกกลุ่มเรียน')));
+            for (var code in codeItem!) {
+              codeItems.add(DropdownMenuItem(
+                  value: code.id, child: Text(code['titleTH'])));
+            }
+            for (var code in secItem!) {
+              secItems.add(
+                  DropdownMenuItem(value: code.id, child: Text(code['sec'])));
+            }
+          }
+          return SizedBox(
+            child: Column(
+              children: [
+                DropdownButtonFormField(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                  ),
+                  borderRadius: BorderRadius.circular(12.0),
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(13),
+                      borderSide: const BorderSide(
+                          color: ui.Color.fromARGB(255, 255, 255, 255),
+                          width: 2),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(13),
+                      borderSide: const BorderSide(
+                          color: ui.Color.fromARGB(255, 255, 255, 255),
+                          width: 3),
+                    ),
+                  ),
+                  items: codeItems,
+                  value: dropdownValue,
+                  onChanged: (codeValue) {
+                    setState(() {
+                      dropdownValue = codeValue;
+
+                      print(dropdownValue);
+                      // subject = codeValue['titleTH'];
+                    });
+                  },
+                  isExpanded: false,
+                ),
+                // DropdownButtonFormField(
+                //   padding:
+                //       const EdgeInsets.symmetric(horizontal: 10,
+                //       //  vertical: 5
+                //        ),
+                //   borderRadius: BorderRadius.circular(12.0),
+                //   decoration: InputDecoration(
+                //     enabledBorder: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(13),
+                //       borderSide: const BorderSide(
+                //           color: ui.Color.fromARGB(255, 255, 255, 255),
+                //           width: 2),
+                //     ),
+                //     focusedBorder: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(13),
+                //       borderSide: const BorderSide(
+                //           color: ui.Color.fromARGB(255, 255, 255, 255),
+                //           width: 3),
+                //     ),
+                //   ),
+                //   items: secItems,
+                //   value: dropdownValue,
+                //   onChanged: (codeValue) {
+                //     setState(() {
+                //       dropdownValue = codeValue;
+
+                //       print(dropdownValue);
+                //       // subject = codeValue['titleTH'];
+                //     });
+                //   },
+                //   isExpanded: false,
+                // ),
+              ],
+            ),
+          );
+        });
+  }
+
   ElevatedButton pickImageBtn(BuildContext context, String no) {
     return ElevatedButton(
       onPressed: () => _showSelectionDialog(context, no),
       style: ElevatedButton.styleFrom(
-        primary: const Color(0xFFFDF3ED).withOpacity(0.9),
+        primary: ui.Color.fromARGB(255, 255, 255, 255).withOpacity(0.9),
         onPrimary: const Color(0xFFEDAB94),
         // backgroundColor: Color(0xFFFDF3ED).withOpacity(0.9),
         shape: RoundedRectangleBorder(

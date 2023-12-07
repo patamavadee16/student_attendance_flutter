@@ -75,6 +75,7 @@ flutter:
       - assets/labelscpe.txt
       - assets/resnet30_quant_model.tflite
       - assets/pic.png
+      - assets/logo.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
