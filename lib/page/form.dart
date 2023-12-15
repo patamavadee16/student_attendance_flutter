@@ -185,9 +185,10 @@ class _formState extends State<form> {
                   SizedBox(
                     child: Column(
                       children: [
+                        Text('ครั้งที่'),
                         DropdownButtonFormField(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 5, vertical: 5),
+                              horizontal: 1, vertical: 1),
                           borderRadius: BorderRadius.circular(12.0),
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
@@ -407,6 +408,7 @@ class _formState extends State<form> {
                                           ),
                                         ],
                                       )),
+                                      Text('comferm')
                       ],
                     ),
                   ),

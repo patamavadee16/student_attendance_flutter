@@ -25,6 +25,7 @@ class _staticPageState extends State<staticPage> {
         .collection('course')
         .where('teacher', isEqualTo: 'อาจารย์.ดร.พิชยพัชยา ศรีคร้าม')
         .get();
+    if (mounted) {
     setState(() {
       for (int i = 0; i < qn.docs.length; i++) {
         _course.add({
@@ -50,7 +51,7 @@ class _staticPageState extends State<staticPage> {
     });
 
     return qn.docs;
-  }
+  }}
 
   @override
   void initState() {
@@ -156,7 +157,8 @@ class _staticPageState extends State<staticPage> {
           isSelect
               ? Column(
                   children: [
-                    SizedBox(height: 450, child:   FutureBuilder<Widget>(
+                    SizedBox(height: 450, child:  
+                    FutureBuilder<Widget>(
        future: fetchStudennt(),
        builder: (BuildContext context, AsyncSnapshot<Widget> snapshot){
          if(snapshot.hasData) {
@@ -166,14 +168,15 @@ class _staticPageState extends State<staticPage> {
                   itemCount: student.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Text(
-                      student[index]['stdId']+student[index]['name']+''+index.toString(),
-                    );
+                      student[index]['stdId']+ student[index]['name']+student[index]['attendance'].toString()+''
+        );
                   });
          }
 
          return Center(child: CircularProgressIndicator());
        }
-      ),),
+      ),
+      ),
                     ElevatedButton(
                         onPressed: createExcel, child: Icon(Icons.download))
                   ],
@@ -185,48 +188,48 @@ class _staticPageState extends State<staticPage> {
   }
 
   void createExcel() async {
-    var myList = [
-      {
-        "id": "116310400477-0",
-        "name": "ปฐมาวดี ทับทอง",
-        "count": "10"
-      },
-      {
-        "id": "116310400477-0",
-        "name": "ปฐมาวดี ทับทอง",
-        "count": "10"
-      },
-      {
-        "id": "116310400477-0",
-        "name": "ปฐมาวดี ทับทอง",
-        "count": "10"
-      },
-      {
-        "id": "116310400477-0",
-        "name": "ปฐมาวดี ทับทอง",
-        "count": "10"
-      },
-      {
-        "id": "116310400477-0",
-        "name": "ปฐมาวดี ทับทอง",
-        "count": "10"
-      },
-      {
-        "id": "116310400477-0",
-        "name": "ปฐมาวดี ทับทอง",
-        "count": "10"
-      },
-      {
-        "id": "116310400477-0",
-        "name": "ปฐมาวดี ทับทอง",
-        "count": "10"
-      },
-      {
-        "id": "116310400477-0",
-        "name": "ปฐมาวดี ทับทอง",
-        "count": "10"
-      }
-    ];
+    // var myList = [
+    //   {
+    //     "id": "116310400477-0",
+    //     "name": "ปฐมาวดี ทับทอง",
+    //     "count": "10"
+    //   },
+    //   {
+    //     "id": "116310400477-0",
+    //     "name": "ปฐมาวดี ทับทอง",
+    //     "count": "10"
+    //   },
+    //   {
+    //     "id": "116310400477-0",
+    //     "name": "ปฐมาวดี ทับทอง",
+    //     "count": "10"
+    //   },
+    //   {
+    //     "id": "116310400477-0",
+    //     "name": "ปฐมาวดี ทับทอง",
+    //     "count": "10"
+    //   },
+    //   {
+    //     "id": "116310400477-0",
+    //     "name": "ปฐมาวดี ทับทอง",
+    //     "count": "10"
+    //   },
+    //   {
+    //     "id": "116310400477-0",
+    //     "name": "ปฐมาวดี ทับทอง",
+    //     "count": "10"
+    //   },
+    //   {
+    //     "id": "116310400477-0",
+    //     "name": "ปฐมาวดี ทับทอง",
+    //     "count": "10"
+    //   },
+    //   {
+    //     "id": "116310400477-0",
+    //     "name": "ปฐมาวดี ทับทอง",
+    //     "count": "10"
+    //   }
+    // ];
     final xcel.Workbook workbook = xcel.Workbook();
     final xcel.Worksheet sheet = workbook.worksheets[0];
     sheet.getRangeByIndex(1, 1).setText("รหัสนักศึกษา");
@@ -289,6 +292,7 @@ class _staticPageState extends State<staticPage> {
             .collection('students')
             .orderBy('no')
         .get();
+if(mounted){
     setState(() {
       student.clear();
       for (int i = 0; i < qn.docs.length; i++) {
@@ -297,26 +301,24 @@ class _staticPageState extends State<staticPage> {
           "name": qn.docs[i]["name"],
           "stdId": qn.docs[i]['studentId'],
           'no': qn.docs[i]['no'],
-          'attendance':qn.docs[i]['attendance']
+          'attendance':
+
+             qn.docs[i]['attendance'].values.reduce((sum, value) => sum + value),
+        
 
 
-        });
-  // int sum = student[i]['attendance'].fold(0, (acc, map) {
-  //   bool boolValue = map.values.first; // Assuming each map has only one key-value pair
-  //   return acc + (boolValue ? 1 : 0);
-  // });
+          
+      
+      
+      
+      });
 
-  // calculate the sum with a loop
-  // for (int value in values) {
-  //   sum += value;
-  // }
-// print(sum );
-print(student[i]['attendance']);
+print(student);
       }
 
- 
+
       
-    });
+    });}
          return  ListView.builder(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
@@ -330,4 +332,5 @@ print(student[i]['attendance']);
               // Text('data');
    
   }
+  
 }
