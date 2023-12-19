@@ -42,29 +42,31 @@ class _formState extends State<form> {
         .collection('course')
         .where('teacher', isEqualTo: 'อาจารย์.ดร.พิชยพัชยา ศรีคร้าม')
         .get();
-    setState(() {
-      for (int i = 0; i < qn.docs.length; i++) {
-        _course.add({
-          'id': qn.docs[i].id,
-          "code": qn.docs[i]["code"],
-          "sec": qn.docs[i]['sec'],
-          'titleTH': qn.docs[i]['titleTH'],
-          'titleEng': qn.docs[i]['titleEng'],
-          'teacher': qn.docs[i]['teacher']
-        });
-      }
+    if (mounted) {
+      setState(() {
+        for (int i = 0; i < qn.docs.length; i++) {
+          _course.add({
+            'id': qn.docs[i].id,
+            "code": qn.docs[i]["code"],
+            "sec": qn.docs[i]['sec'],
+            'titleTH': qn.docs[i]['titleTH'],
+            'titleEng': qn.docs[i]['titleEng'],
+            'teacher': qn.docs[i]['teacher']
+          });
+        }
 
-      courseItems
-          .add(const DropdownMenuItem(value: '0', child: Text('เลือกวิชา')));
-      for (int code = 0; code < _course.length; code++) {
-        print(code);
-        print(_course[code]['id']);
-        courseItems.add(DropdownMenuItem(
-            value: _course[code]['id'],
-            child: Text(
-                _course[code]['titleTH'] + ' sec ' + _course[code]['sec'])));
-      }
-    });
+        courseItems
+            .add(const DropdownMenuItem(value: '0', child: Text('เลือกวิชา')));
+        for (int code = 0; code < _course.length; code++) {
+          print(code);
+          print(_course[code]['id']);
+          courseItems.add(DropdownMenuItem(
+              value: _course[code]['id'],
+              child: Text(
+                  _course[code]['titleTH'] + ' sec ' + _course[code]['sec'])));
+        }
+      });
+    }
 
     return qn.docs;
   }
@@ -128,7 +130,7 @@ class _formState extends State<form> {
                         height: 60,
                       ),
                       Container(
-                          child: Column(
+                          child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text('FACE  RECOGNITION'),
@@ -185,7 +187,6 @@ class _formState extends State<form> {
                   SizedBox(
                     child: Column(
                       children: [
-                        Text('ครั้งที่'),
                         DropdownButtonFormField(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 1, vertical: 1),
@@ -207,15 +208,21 @@ class _formState extends State<form> {
                           items: courseItems,
                           value: dropdownValue,
                           onChanged: (codeValue) {
-                            setState(() {
-                              // dropdownValue = codeValue;
+                            if (mounted) {
+                              setState(() {
+                                // dropdownValue = codeValue;
 
-                              // print(dropdownValue);
-                              // subject = codeValue['titleTH'];
-                            });
+                                // print(dropdownValue);
+                                // subject = codeValue['titleTH'];
+                              });
+                            }
                           },
                           isExpanded: false,
                         ),
+                         const SizedBox(
+                          height: 40,
+                        ),
+                        Text('ครั้งที่'),
                         const SizedBox(
                           height: 40,
                         ),
@@ -394,8 +401,7 @@ class _formState extends State<form> {
                                                     _vision.multiLabel3.length,
                                                     (index) {
                                                   return Text(
-                                                    '${index + 1}. ${_vision
-                                                            .multiLabel3[index]}',
+                                                    '${index + 1}. ${_vision.multiLabel3[index]}',
                                                     style: const TextStyle(
                                                         fontSize: 20),
                                                   );
@@ -405,22 +411,25 @@ class _formState extends State<form> {
                                           ),
                                         ],
                                       )),
-                                      ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                primary: Color.fromARGB(255, 96, 255, 157)
-                                    .withOpacity(0.9),
-                                onPrimary: Color.fromARGB(255, 255, 255, 255),
-                                // backgroundColor: Color(0xFFFDF3ED).withOpacity(0.9),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                ),
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              primary: Color.fromARGB(255, 96, 255, 157)
+                                  .withOpacity(0.9),
+                              onPrimary: Color.fromARGB(255, 255, 255, 255),
+                              // backgroundColor: Color(0xFFFDF3ED).withOpacity(0.9),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
                               ),
-                              onPressed: (){},
-                              label: const Text(
-                                "ยืนยัน",
-                                style: TextStyle(fontSize: 20),
-                              ), //label text
-                              icon: Icon(Icons.check))
+                            ),
+                            onPressed: () {},
+                            label: const Text(
+                              "ยืนยัน",
+                              style: TextStyle(fontSize: 20),
+                            ), //label text
+                            icon: Icon(Icons.check))
                       ],
                     ),
                   ),
@@ -511,12 +520,14 @@ class _formState extends State<form> {
                   items: codeItems,
                   value: dropdownValue,
                   onChanged: (codeValue) {
-                    setState(() {
-                      dropdownValue = codeValue;
+                    if (mounted) {
+                      setState(() {
+                        dropdownValue = codeValue;
 
-                      print(dropdownValue);
-                      // subject = codeValue['titleTH'];
-                    });
+                        print(dropdownValue);
+                        // subject = codeValue['titleTH'];
+                      });
+                    }
                   },
                   isExpanded: false,
                 ),

@@ -15,6 +15,7 @@ class staticPage extends StatefulWidget {
 
 class _staticPageState extends State<staticPage> {
   String dropdownValue = 'start';
+  bool isDownload = false;
   final List _course = [];
   final List student = [];
   String subject = "";
@@ -255,7 +256,7 @@ class _staticPageState extends State<staticPage> {
                           ),
                           ElevatedButton.icon(
                               style: ElevatedButton.styleFrom(
-                                primary: Color.fromARGB(255, 96, 255, 157)
+                                primary: Color(0xff98fb98)
                                     .withOpacity(0.9),
                                 onPrimary: Color.fromARGB(255, 255, 255, 255),
                                 // backgroundColor: Color(0xFFFDF3ED).withOpacity(0.9),
@@ -281,6 +282,7 @@ class _staticPageState extends State<staticPage> {
   }
 
   void createExcel() async {
+    showAlertDialog(context);
     // var myList = [
     //   {
     //     "id": "116310400477-0",
@@ -332,7 +334,8 @@ class _staticPageState extends State<staticPage> {
       final item = student[i];
       sheet.getRangeByIndex(i + 2, 1).setText(item["stdId"].toString());
       sheet.getRangeByIndex(i + 2, 2).setText(item["name"].toString());
-      sheet.getRangeByIndex(i + 2, 3).setText(item["id"].toString());
+      sheet.getRangeByIndex(i + 2, 3).setText('test'.toString());
+      // sheet.getRangeByIndex(i + 2, 3).setText(item["id"].toString());
     }
     final List<int> bytes = workbook.saveAsStream();
     // xcel.Workbook().dispose();
@@ -342,9 +345,25 @@ class _staticPageState extends State<staticPage> {
     final File file = File(fileName);
     print(path);
     await file.writeAsBytes(bytes, flush: true);
+    Navigator.pop(context);
+
     // xcel.OpenFile.open(fileName);
   }
-
+showAlertDialog(BuildContext context){
+      AlertDialog alert=AlertDialog(
+        content: Row(
+            children: [
+               const CircularProgressIndicator(),
+               Container(margin: EdgeInsets.only(left: 5),child:Text("Loading" )),
+            ],),
+      );
+      showDialog(barrierDismissible: false,
+        context:context,
+        builder:(BuildContext context){
+          return alert;
+        },
+      );
+    }
   StreamBuilder<QuerySnapshot> newMethod(BuildContext context) {
     List<String> Items = [];
     return StreamBuilder<QuerySnapshot>(
@@ -389,17 +408,15 @@ class _staticPageState extends State<staticPage> {
     if (mounted) {
       setState(() {
         student.clear();
-        // print(student);
         for (int i = 0; i < qn.docs.length; i++) {
           student.add({
             'id': qn.docs[i].id,
             "name": qn.docs[i]["name"],
             "stdId": qn.docs[i]['studentId'],
             'no': qn.docs[i]['no'],
-            // 'attendance': qn.docs[i]['attendance'].values
-            //     .reduce((sum, value) => sum + value),
+            //.attendance': qn.docs[i]['attendance'].values
+            //.reduce((sum, value) => sum + value),
           });
-
           // print(student);
         }
       });
