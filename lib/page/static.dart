@@ -14,9 +14,10 @@ class staticPage extends StatefulWidget {
 }
 
 class _staticPageState extends State<staticPage> {
-  String dropdownValue = '0';
+  String dropdownValue = 'start';
   final List _course = [];
-    final List student = [];
+  final List student = [];
+  String subject = "";
   bool isSelect = false;
   List<DropdownMenuItem> courseItems = [];
   final _firestoreInstance = FirebaseFirestore.instance;
@@ -26,32 +27,33 @@ class _staticPageState extends State<staticPage> {
         .where('teacher', isEqualTo: 'อาจารย์.ดร.พิชยพัชยา ศรีคร้าม')
         .get();
     if (mounted) {
-    setState(() {
-      for (int i = 0; i < qn.docs.length; i++) {
-        _course.add({
-          'id': qn.docs[i].id,
-          "code": qn.docs[i]["code"],
-          "sec": qn.docs[i]['sec'],
-          'titleTH': qn.docs[i]['titleTH'],
-          'titleEng': qn.docs[i]['titleEng'],
-          'teacher': qn.docs[i]['teacher']
-        });
-      }
+      setState(() {
+        for (int i = 0; i < qn.docs.length; i++) {
+          _course.add({
+            'id': qn.docs[i].id,
+            "code": qn.docs[i]["code"],
+            "sec": qn.docs[i]['sec'],
+            'titleTH': qn.docs[i]['titleTH'],
+            'titleEng': qn.docs[i]['titleEng'],
+            'teacher': qn.docs[i]['teacher']
+          });
+        }
 
-      courseItems
-          .add(const DropdownMenuItem(value: '0', child: Text('เลือกวิชา')));
-      for (int code = 0; code < _course.length; code++) {
-        // print(code);
-        // print(_course[code]['id']);
-        courseItems.add(DropdownMenuItem(
-            value: _course[code]['id'],
-            child: Text(
-                _course[code]['titleTH'] + ' sec ' + _course[code]['sec'])));
-      }
-    });
+        courseItems
+            .add(const DropdownMenuItem(value: 'start', child: Text('เลือกวิชา')));
+        for (int code = 0; code < _course.length; code++) {
+          // print(code);
+          // print(_course[code]['id']);
+          courseItems.add(DropdownMenuItem(
+              value: _course[code]['id'],
+              child: Text(
+                  _course[code]['titleTH'] + ' sec ' + _course[code]['sec'])));
+        }
+      });
 
-    return qn.docs;
-  }}
+      return qn.docs;
+    }
+  }
 
   @override
   void initState() {
@@ -62,6 +64,7 @@ class _staticPageState extends State<staticPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFEDAB94),
       body: Column(
         children: [
           Container(
@@ -70,7 +73,7 @@ class _staticPageState extends State<staticPage> {
               width: MediaQuery.of(context).size.width,
               height: 60,
               child: DecoratedBox(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: ui.Color.fromARGB(255, 255, 255, 255),
                   ),
                   child: Row(
@@ -82,106 +85,196 @@ class _staticPageState extends State<staticPage> {
                         width: 70,
                         height: 60,
                       ),
-                      Container(
-                          child: Column(
+                      const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text('FACE  RECOGNITION'),
                           Text('ATTENDANCE')
                         ],
-                      )),
+                      ),
                     ],
                   )),
             ),
           ),
-          Container(
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: 60,
-              child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  color: Color(0xFFEDAB94),
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.arrow_back_ios),
-                        iconSize: 30,
-                      ),
-                      title: const Text(
-                        'เช็คชื่อเข้าเรียน',
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.normal),
-                      ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: 60,
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                color: Color(0xFFEDAB94),
+              ),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.arrow_back_ios),
+                      iconSize: 30,
                     ),
-                  ],
+                    title: const Text(
+                      'สถิติเข้าเรียนย้อนหลัง',
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                          fontWeight: FontWeight.normal),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+              child: DecoratedBox(
+            decoration: const BoxDecoration(
+                color: Color(0xFFFDF3ED),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30))),
+            child: Column(
+              children: [
+                const Text('ผลการเข้าเรียนย้อนหลัง',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Color(0xFFEDAB94),
+                        fontWeight: FontWeight.normal)),
+                DropdownButtonFormField(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                  borderRadius: BorderRadius.circular(12.0),
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(13),
+                      borderSide: const BorderSide(
+                          color: ui.Color.fromARGB(255, 255, 255, 255),
+                          width: 2),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(13),
+                      borderSide: const BorderSide(
+                          color: ui.Color.fromARGB(255, 255, 255, 255),
+                          width: 3),
+                    ),
+                  ),
+                  items: courseItems,
+                  value: dropdownValue,
+                  onChanged: (codeValue) {
+                    if(mounted){
+                    setState(() {
+                      dropdownValue = codeValue;
+                      if(dropdownValue=='start'){
+                         isSelect = false;
+                      }else
+                      isSelect = true;
+
+                      // dropdownValue = codeValue;
+
+                      print(dropdownValue);
+                      // subject = codeValue['titleTH'];
+                    });};
+                  },
+                  isExpanded: false,
                 ),
-              ),
-            ),
-          ),
-          DropdownButtonFormField(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-            borderRadius: BorderRadius.circular(12.0),
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(13),
-                borderSide: const BorderSide(
-                    color: ui.Color.fromARGB(255, 255, 255, 255), width: 2),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(13),
-                borderSide: const BorderSide(
-                    color: ui.Color.fromARGB(255, 255, 255, 255), width: 3),
-              ),
-            ),
-            items: courseItems,
-            value: dropdownValue,
-            onChanged: (codeValue) {
-              setState(() {
-                dropdownValue = codeValue;
-                isSelect = true;
-                // dropdownValue = codeValue;
+                isSelect
+                    ? Column(
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.61,
+                            child: FutureBuilder<Widget>(
+                                future: fetchStudennt(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<Widget> snapshot) {
+                                  if (snapshot.hasData) {
+                                    return ListView.separated(
+                                      scrollDirection: Axis.vertical,
+                                      shrinkWrap: true,
+                                      itemCount: student.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return Container(
+                                          color: index % 2 == 0 ? const Color(0xFFFDF3ED) : Color(0xffEBE3DF),
+                                          // color: Color.fromARGB(255, 255, 253, 237),
+                                          child: Column(
+                                            children: [
+                                              ListTile(
+                                                leading:
+                                                    Text('เลขที่ ${index + 1}',
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 14,
+                                                        )),
+                                                title: Text(
+                                                  student[index]['stdId'],
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                                trailing: Text(
+                                                  student[index]['name'],
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ),
+                                              const ListTile(
+                                                  leading: Text('เข้าเรียน xx',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 15,
+                                                      )),
+                                                  title: Text('ขาดเรียน xx',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 15,
+                                                      ))),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                      separatorBuilder: (context, index) {
+                                        return const Divider(
+                                          height: 20,
+                                          thickness: 5,
+                                          indent: 20,
+                                          endIndent: 20,
+                                          // color: Colors.black,
+                                        );
+                                      },
+                                    );
+                                  }
 
-                // print(dropdownValue);
-                // subject = codeValue['titleTH'];
-              });
-            },
-            isExpanded: false,
-          ),
-          isSelect
-              ? Column(
-                  children: [
-                    SizedBox(height: 450, child:  
-                    FutureBuilder<Widget>(
-       future: fetchStudennt(),
-       builder: (BuildContext context, AsyncSnapshot<Widget> snapshot){
-         if(snapshot.hasData) {
-           return            ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: student.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Text(
-                      student[index]['stdId']+ student[index]['name']+student[index]['attendance'].toString()+''
-        );
-                  });
-         }
-
-         return Center(child: CircularProgressIndicator());
-       }
-      ),
-      ),
-                    ElevatedButton(
-                        onPressed: createExcel, child: Icon(Icons.download))
-                  ],
-                )
-              : Text('select ')
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                }),
+                          ),
+                          ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                primary: Color.fromARGB(255, 96, 255, 157)
+                                    .withOpacity(0.9),
+                                onPrimary: Color.fromARGB(255, 255, 255, 255),
+                                // backgroundColor: Color(0xFFFDF3ED).withOpacity(0.9),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
+                              onPressed: createExcel,
+                              label: const Text(
+                                "ดาวโหลดไฟล์ .xls",
+                                style: TextStyle(fontSize: 20),
+                              ), //label text
+                              icon: Icon(Icons.download))
+                        ],
+                      )
+                    : Text('select ')
+              ],
+            ),
+          ))
         ],
       ),
     );
@@ -285,52 +378,42 @@ class _staticPageState extends State<staticPage> {
                   });
         });
   }
-    Future<Widget> fetchStudennt() async {
+
+  Future<Widget> fetchStudennt() async {
     QuerySnapshot qn = await _firestoreInstance
-          .collection('course')
-            .doc(dropdownValue)
-            .collection('students')
-            .orderBy('no')
+        .collection('course')
+        .doc(dropdownValue)
+        .collection('students')
+        .orderBy('no')
         .get();
-if(mounted){
-    setState(() {
-      student.clear();
-      for (int i = 0; i < qn.docs.length; i++) {
-        student.add({
-          'id': qn.docs[i].id,
-          "name": qn.docs[i]["name"],
-          "stdId": qn.docs[i]['studentId'],
-          'no': qn.docs[i]['no'],
-          'attendance':
+    if (mounted) {
+      setState(() {
+        student.clear();
+        // print(student);
+        for (int i = 0; i < qn.docs.length; i++) {
+          student.add({
+            'id': qn.docs[i].id,
+            "name": qn.docs[i]["name"],
+            "stdId": qn.docs[i]['studentId'],
+            'no': qn.docs[i]['no'],
+            // 'attendance': qn.docs[i]['attendance'].values
+            //     .reduce((sum, value) => sum + value),
+          });
 
-             qn.docs[i]['attendance'].values.reduce((sum, value) => sum + value),
-        
-
-
-          
-      
-      
-      
+          // print(student);
+        }
       });
+    }
+    return ListView.builder(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemCount: student.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Text(
+            student[index]['stdId'] + index.toString(),
+          );
+        });
 
-print(student);
-      }
-
-
-      
-    });}
-         return  ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: student.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Text(
-                      student[index]['stdId']+index.toString(),
-                    );
-                  });
-   
-              // Text('data');
-   
+    // Text('data');
   }
-  
 }

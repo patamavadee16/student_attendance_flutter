@@ -394,11 +394,8 @@ class _formState extends State<form> {
                                                     _vision.multiLabel3.length,
                                                     (index) {
                                                   return Text(
-                                                    (index + 1).toString() +
-                                                        '. ' +
-                                                        _vision
-                                                            .multiLabel3[index]
-                                                            .toString(),
+                                                    '${index + 1}. ${_vision
+                                                            .multiLabel3[index]}',
                                                     style: const TextStyle(
                                                         fontSize: 20),
                                                   );
@@ -408,7 +405,22 @@ class _formState extends State<form> {
                                           ),
                                         ],
                                       )),
-                                      Text('comferm')
+                                      ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                primary: Color.fromARGB(255, 96, 255, 157)
+                                    .withOpacity(0.9),
+                                onPrimary: Color.fromARGB(255, 255, 255, 255),
+                                // backgroundColor: Color(0xFFFDF3ED).withOpacity(0.9),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
+                              onPressed: (){},
+                              label: const Text(
+                                "ยืนยัน",
+                                style: TextStyle(fontSize: 20),
+                              ), //label text
+                              icon: Icon(Icons.check))
                       ],
                     ),
                   ),
