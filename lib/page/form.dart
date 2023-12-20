@@ -211,7 +211,6 @@ class _formState extends State<form> {
                             if (mounted) {
                               setState(() {
                                 // dropdownValue = codeValue;
-
                                 // print(dropdownValue);
                                 // subject = codeValue['titleTH'];
                               });
@@ -222,7 +221,7 @@ class _formState extends State<form> {
                          const SizedBox(
                           height: 40,
                         ),
-                        Text('ครั้งที่'),
+                        const Text('ครั้งที่'),
                         const SizedBox(
                           height: 40,
                         ),
