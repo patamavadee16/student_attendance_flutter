@@ -364,39 +364,39 @@ showAlertDialog(BuildContext context){
         },
       );
     }
-  StreamBuilder<QuerySnapshot> newMethod(BuildContext context) {
-    List<String> Items = [];
-    return StreamBuilder<QuerySnapshot>(
-        stream: _firestoreInstance
-            .collection('course')
-            .doc(dropdownValue)
-            .collection('students')
-            .orderBy('no')
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            const CircularProgressIndicator();
-          } else {
-            final codeItem = snapshot.data?.docs.reversed.toList();
-            Items.clear();
-            for (var code in codeItem!) {
-              Items.add(code['studentId'] + ' ' + code['name']);
-              print(code['name']);
-            }
-          }
-          return
-              // Text('data');
-              ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: Items.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Text(
-                      Items[index] + index.toString(),
-                    );
-                  });
-        });
-  }
+  // StreamBuilder<QuerySnapshot> newMethod(BuildContext context) {
+  //   List<String> Items = [];
+  //   return StreamBuilder<QuerySnapshot>(
+  //       stream: _firestoreInstance
+  //           .collection('course')
+  //           .doc(dropdownValue)
+  //           .collection('students')
+  //           .orderBy('no')
+  //           .snapshots(),
+  //       builder: (context, snapshot) {
+  //         if (!snapshot.hasData) {
+  //           const CircularProgressIndicator();
+  //         } else {
+  //           final codeItem = snapshot.data?.docs.reversed.toList();
+  //           Items.clear();
+  //           for (var code in codeItem!) {
+  //             Items.add(code['studentId'] + ' ' + code['name']);
+  //             print(code['name']);
+  //           }
+  //         }
+  //         return
+  //             // Text('data');
+  //             ListView.builder(
+  //                 scrollDirection: Axis.vertical,
+  //                 shrinkWrap: true,
+  //                 itemCount: Items.length,
+  //                 itemBuilder: (BuildContext context, int index) {
+  //                   return Text(
+  //                     Items[index] + index.toString(),
+  //                   );
+  //                 });
+  //       });
+  // }
 
   Future<Widget> fetchStudennt() async {
     QuerySnapshot qn = await _firestoreInstance

@@ -47,6 +47,7 @@ dependencies:
   cloud_firestore: ^4.13.3
   dropdown_search: ^5.0.6
   syncfusion_flutter_xlsio: ^23.2.7
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +78,8 @@ flutter:
       - assets/resnet30_quant_model.tflite
       - assets/pic.png
       - assets/logo.png
+      - assets/resnet30_quant_model_22_dec.tflite
+      - assets/resnet_num.txt
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

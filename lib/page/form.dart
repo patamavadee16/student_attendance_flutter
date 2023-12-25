@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'dart:ui';
+import 'dart:io';
+import 'dart:math';
 // import 'package:image/image.dart' as img;
 import 'package:student_attendance/classifier/classifier_quant.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +13,6 @@ import '../classifier/classifier.dart';
 import '../classifier/vision_adapter.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 
 // import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 class form extends StatefulWidget {
@@ -24,17 +25,23 @@ class _formState extends State<form> {
   String dropdownValue = '0';
   String subject = ' ';
   late Classifier _classifier;
+  List<Map> student = [];
   bool isLoading = false;
   bool isLoading2 = false;
   bool isLoading3 = false;
+  bool isSelected = false;
   ui.Image? _image1;
   ui.Image? _image2;
   ui.Image? _image3;
+  File? _file1;
+  File? _file2;
+  File? _file3;
   List<String> multiLabel = [];
   final picker = ImagePicker();
   VisionAdapter _vision = VisionAdapter();
   TfResult? tflite;
   final List _course = [];
+  String courseSelected = '';
   List<DropdownMenuItem> courseItems = [];
   final _firestoreInstance = FirebaseFirestore.instance;
   fetchProducts() async {
@@ -210,225 +217,261 @@ class _formState extends State<form> {
                           onChanged: (codeValue) {
                             if (mounted) {
                               setState(() {
-                                // dropdownValue = codeValue;
-                                // print(dropdownValue);
+                                dropdownValue = codeValue;
+                                print(dropdownValue);
+                                isSelected=true;
                                 // subject = codeValue['titleTH'];
                               });
                             }
                           },
                           isExpanded: false,
                         ),
-                         const SizedBox(
-                          height: 40,
-                        ),
-                        const Text('ครั้งที่'),
                         const SizedBox(
                           height: 40,
                         ),
-                        Container(
-                            child: isLoading
-                                ? const Center(
-                                    child: CircularProgressIndicator(
-                                    backgroundColor: Color(0xFFFDF3ED),
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      ui.Color.fromARGB(
-                                          255, 255, 255, 255), //<-- SEE HERE
-                                    ),
-                                  ))
-                                : (_image1 == null)
-                                    ? Center(
-                                        child: SizedBox(
-                                            height: 120,
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            child: pickImageBtn(context, '1')))
-                                    : Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          FittedBox(
-                                            child: SizedBox(
-                                                width:
-                                                    _image1!.width.toDouble(),
-                                                height:
-                                                    _image1!.height.toDouble(),
-                                                child: CustomPaint(
-                                                  painter: VisionPainter(
-                                                      _vision,
-                                                      Size(349, 349),
-                                                      Size(411, 866.0),
-                                                      _image1!,
-                                                      '1'),
-                                                )),
-                                          ),
-                                          SizedBox(
-                                            height: 200,
-                                            child: SingleChildScrollView(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: List.generate(
-                                                    _vision.multiLabel.length,
-                                                    (index) {
-                                                  return Text(
-                                                    (index + 1).toString() +
-                                                        '. ' +
-                                                        _vision
-                                                            .multiLabel[index]
-                                                            .toString(),
-                                                    style: const TextStyle(
-                                                        fontSize: 20),
-                                                  );
-                                                }),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      )),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        Container(
-                            child: isLoading2
-                                ? const Center(
-                                    child: CircularProgressIndicator(
-                                    backgroundColor: Color(0xFFEDAB94),
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      ui.Color.fromARGB(
-                                          255, 255, 255, 255), //<-- SEE HERE
-                                    ),
-                                  ))
-                                : (_image2 == null)
-                                    ? Center(
-                                        child: SizedBox(
-                                            height: 120,
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            child: pickImageBtn(context, '2')))
-                                    : Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          FittedBox(
-                                            child: SizedBox(
-                                                width:
-                                                    _image2!.width.toDouble(),
-                                                height:
-                                                    _image2!.height.toDouble(),
-                                                child: CustomPaint(
-                                                  painter: VisionPainter(
-                                                      _vision,
-                                                      Size(349, 349),
-                                                      Size(411, 866.0),
-                                                      _image2!,
-                                                      '2'),
-                                                )),
-                                          ),
-                                          SizedBox(
-                                            height: 200,
-                                            child: SingleChildScrollView(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: List.generate(
-                                                    _vision.multiLabel2.length,
-                                                    (index) {
-                                                  return Text(
-                                                    (index + 1).toString() +
-                                                        '. ' +
-                                                        _vision
-                                                            .multiLabel2[index]
-                                                            .toString(),
-                                                    style: const TextStyle(
-                                                        fontSize: 20),
-                                                  );
-                                                }),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      )),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        Container(
-                            child: isLoading3
-                                ? const Center(
-                                    child: CircularProgressIndicator(
-                                    backgroundColor: Color(0xFFEDAB94),
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      ui.Color.fromARGB(
-                                          255, 255, 255, 255), //<-- SEE HERE
-                                    ),
-                                  ))
-                                : (_image3 == null)
-                                    ? Center(
-                                        child: SizedBox(
-                                            height: 120,
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            child: pickImageBtn(context, '3')))
-                                    : Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          FittedBox(
-                                            child: SizedBox(
-                                                width:
-                                                    _image3!.width.toDouble(),
-                                                height:
-                                                    _image3!.height.toDouble(),
-                                                child: CustomPaint(
-                                                  painter: VisionPainter(
-                                                      _vision,
-                                                      Size(349, 349),
-                                                      Size(411, 866.0),
-                                                      _image3!,
-                                                      '3'),
-                                                )),
-                                          ),
-                                          SizedBox(
-                                            height: 200,
-                                            child: SingleChildScrollView(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: List.generate(
-                                                    _vision.multiLabel3.length,
-                                                    (index) {
-                                                  return Text(
-                                                    '${index + 1}. ${_vision.multiLabel3[index]}',
-                                                    style: const TextStyle(
-                                                        fontSize: 20),
-                                                  );
-                                                }),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      )),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              primary: Color.fromARGB(255, 96, 255, 157)
-                                  .withOpacity(0.9),
-                              onPrimary: Color.fromARGB(255, 255, 255, 255),
-                              // backgroundColor: Color(0xFFFDF3ED).withOpacity(0.9),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
+                        isSelected?Column(
+                          children: [
+                            const Text('ครั้งที่'),
+                            const SizedBox(
+                              height: 40,
                             ),
-                            onPressed: () {},
-                            label: const Text(
-                              "ยืนยัน",
-                              style: TextStyle(fontSize: 20),
-                            ), //label text
-                            icon: Icon(Icons.check))
+                            Container(
+                                child: isLoading
+                                    ? const Center(
+                                        child: CircularProgressIndicator(
+                                        backgroundColor: Color(0xFFFDF3ED),
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                          ui.Color.fromARGB(
+                                              255, 255, 255, 255), //<-- SEE HERE
+                                        ),
+                                      ))
+                                    : (_image1 == null)
+                                        ? Center(
+                                            child: SizedBox(
+                                                height: 120,
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                child: pickImageBtn(context, '1')))
+                                        : Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              FittedBox(
+                                                child: SizedBox(
+                                                    width:
+                                                        _image1!.width.toDouble(),
+                                                    height:
+                                                        _image1!.height.toDouble(),
+                                                    child: CustomPaint(
+                                                      painter: VisionPainter(
+                                                          _vision,
+                                                          Size(349, 349),
+                                                          Size(411, 866.0),
+                                                          _image1!,
+                                                          '1'),
+                                                    )),
+                                              ),
+                                              SizedBox(
+                                                height: 200,
+                                                child: SingleChildScrollView(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
+                                                    children: List.generate(
+                                                        _vision.multiLabel.length,
+                                                        (index) {
+                                                      return Text(
+                                                        (index + 1).toString() +
+                                                            '. ' +
+                                                            _vision
+                                                                .multiLabel[index]
+                                                                .toString(),
+                                                        style: const TextStyle(
+                                                            fontSize: 20),
+                                                      );
+                                                    }),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )),
+                            const SizedBox(
+                              height: 40,
+                            ),
+                            Container(
+                                child: isLoading2
+                                    ? const Center(
+                                        child: CircularProgressIndicator(
+                                        backgroundColor: Color(0xFFEDAB94),
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                          ui.Color.fromARGB(
+                                              255, 255, 255, 255), //<-- SEE HERE
+                                        ),
+                                      ))
+                                    : (_image2 == null)
+                                        ? Center(
+                                            child: SizedBox(
+                                                height: 120,
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                child: pickImageBtn(context, '2')))
+                                        : Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              FittedBox(
+                                                child: SizedBox(
+                                                    width:
+                                                        _image2!.width.toDouble(),
+                                                    height:
+                                                        _image2!.height.toDouble(),
+                                                    child: CustomPaint(
+                                                      painter: VisionPainter(
+                                                          _vision,
+                                                          Size(349, 349),
+                                                          Size(411, 866.0),
+                                                          _image2!,
+                                                          '2'),
+                                                    )),
+                                              ),
+                                              SizedBox(
+                                                height: 200,
+                                                child: SingleChildScrollView(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
+                                                    children: List.generate(
+                                                        _vision.multiLabel2.length,
+                                                        (index) {
+                                                      return Text(
+                                                        (index + 1).toString() +
+                                                            '. ' +
+                                                            _vision
+                                                                .multiLabel2[index]
+                                                                .toString(),
+                                                        style: const TextStyle(
+                                                            fontSize: 20),
+                                                      );
+                                                    }),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )),
+                            const SizedBox(
+                              height: 40,
+                            ),
+                            Container(
+                                child: isLoading3
+                                    ? const Center(
+                                        child: CircularProgressIndicator(
+                                        backgroundColor: Color(0xFFEDAB94),
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                          ui.Color.fromARGB(
+                                              255, 255, 255, 255), //<-- SEE HERE
+                                        ),
+                                      ))
+                                    : (_image3 == null)
+                                        ? Center(
+                                            child: SizedBox(
+                                                height: 120,
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                child: pickImageBtn(context, '3')))
+                                        : Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              FittedBox(
+                                                child: SizedBox(
+                                                    width:
+                                                        _image3!.width.toDouble(),
+                                                    height:
+                                                        _image3!.height.toDouble(),
+                                                    child: CustomPaint(
+                                                      painter: VisionPainter(
+                                                          _vision,
+                                                          Size(349, 349),
+                                                          Size(411, 866.0),
+                                                          _image3!,
+                                                          '3'),
+                                                    )),
+                                              ),
+                                              SizedBox(
+                                                height: 200,
+                                                child: Text('data')
+        //                                             FutureBuilder<Widget>(
+        // future : fetchStudennt1() ,
+        // builder: (context, snapshot) {
+        //   if (snapshot.hasData) {
+        //      return ListView.separated(
+        //                               scrollDirection: Axis.vertical,
+        //                                  separatorBuilder: (context, index) {
+        //                                 return const Divider(
+        //                                   height: 20,
+        //                                   thickness: 5,
+        //                                   indent: 20,
+        //                                   endIndent: 20,
+        //                                   // color: Colors.black,
+        //                                 );
+        //                               },
+        //                               shrinkWrap: true,
+        //                               itemCount: student.length,
+        //                               itemBuilder:(BuildContext context, int index){return Text(
+        //     '${index + 1}.${student[index]['name']}',
+        //     style: const TextStyle(fontSize: 20),
+            
+        //   );
+        //                               });}
+        //     return const Center(
+        //                               child: CircularProgressIndicator());
+        //     //  final codeItem = snapshot.data?.docs.reversed.toList();
+
+        //     // for (var code in codeItem!) {
+        //     //   student.add({
+        //     //     'id': code.id,
+        //     //     "name": code["name"],
+        //     //     "stdId": code['studentId'],
+        //     //     'no': code['no'],
+        //     //     //.attendance': qn.docs[i]['attendance'].values
+        //     //     //.reduce((sum, value) => sum + value),
+        //     //   });
+        //     //   print(index);
+        //     //   print(student[index]['name']);
+        //     // }
+          
+         
+        // })
+                                                    
+                                                  ),
+                          ]),
+                                              ),
+                                           
+                
+                            const SizedBox(
+                              height: 40,
+                            ),
+                            ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Color.fromARGB(255, 96, 255, 157)
+                                      .withOpacity(0.9),
+                                  onPrimary: Color.fromARGB(255, 255, 255, 255),
+                                  // backgroundColor: Color(0xFFFDF3ED).withOpacity(0.9),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                ),
+                                onPressed: uploadPic,
+                                label: const Text(
+                                  "ยืนยัน",
+                                  style: TextStyle(fontSize: 20),
+                                ), //label text
+                                icon: Icon(Icons.check)),
+                       
+                        ], ): Text('plese select')
                       ],
                     ),
                   ),
@@ -473,6 +516,83 @@ class _formState extends State<form> {
 
       //   )
     );
+  }
+  Future<Widget> fetchStudennt1() async {
+    for (int i = 0; i < _vision.multiLabel3.length; i++) {
+  QuerySnapshot qn = await _firestoreInstance
+       .collection('course')
+            .doc('ZAby5d4EbPj8vyfEgwRk')
+            .collection('students')
+            .where('studentId', isEqualTo: _vision.multiLabel3[i])
+            .get();
+         }
+            // .collection('course')
+            // .doc('ZAby5d4EbPj8vyfEgwRk')
+            // .collection('students')
+            // .where('studentId', isEqualTo: _vision.multiLabel3[index])
+            // .get();
+    if (mounted) {
+      setState(() {
+        // for (int i = 0; i < qn.docs.length; i++) {
+        //   student.add({
+        //     'id': qn.docs[i].id,
+        //     "name": qn.docs[i]["name"],
+        //     "stdId": qn.docs[i]['studentId'],
+        //     'no': qn.docs[i]['no'],
+        //     //.attendance': qn.docs[i]['attendance'].values
+        //     //.reduce((sum, value) => sum + value),
+        //   });
+        //   print(_vision.multiLabel3.length);
+        // }
+           
+      });
+    }
+    
+    return ListView.builder(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemCount: student.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Text(
+            student[index]['stdId'] + index.toString(),
+          );
+        });
+
+    // Text('data');
+  }
+  StreamBuilder<QuerySnapshot<Object?>> fetchStudent(int index) {
+    return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('course')
+            .doc('ZAby5d4EbPj8vyfEgwRk')
+            .collection('students')
+            .where('studentId', isEqualTo: _vision.multiLabel3[index])
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            const CircularProgressIndicator();
+          } else {
+           
+            final codeItem = snapshot.data?.docs.reversed.toList();
+
+            for (var code in codeItem!) {
+              student.add({
+                'id': code.id,
+                "name": code["name"],
+                "stdId": code['studentId'],
+                'no': code['no'],
+                //.attendance': qn.docs[i]['attendance'].values
+                //.reduce((sum, value) => sum + value),
+              });
+              print(index);
+              print(student[index]['name']);
+            }
+          }
+          return Text(
+            '${index + 1}.${student[index]['name']}',
+            style: const TextStyle(fontSize: 20),
+          );
+        });
   }
 
   StreamBuilder<QuerySnapshot<Object?>> dropdown() {
@@ -530,38 +650,6 @@ class _formState extends State<form> {
                   },
                   isExpanded: false,
                 ),
-                // DropdownButtonFormField(
-                //   padding:
-                //       const EdgeInsets.symmetric(horizontal: 10,
-                //       //  vertical: 5
-                //        ),
-                //   borderRadius: BorderRadius.circular(12.0),
-                //   decoration: InputDecoration(
-                //     enabledBorder: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(13),
-                //       borderSide: const BorderSide(
-                //           color: ui.Color.fromARGB(255, 255, 255, 255),
-                //           width: 2),
-                //     ),
-                //     focusedBorder: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(13),
-                //       borderSide: const BorderSide(
-                //           color: ui.Color.fromARGB(255, 255, 255, 255),
-                //           width: 3),
-                //     ),
-                //   ),
-                //   items: secItems,
-                //   value: dropdownValue,
-                //   onChanged: (codeValue) {
-                //     setState(() {
-                //       dropdownValue = codeValue;
-
-                //       print(dropdownValue);
-                //       // subject = codeValue['titleTH'];
-                //     });
-                //   },
-                //   isExpanded: false,
-                // ),
               ],
             ),
           );
@@ -736,6 +824,63 @@ class _formState extends State<form> {
     // .then((value) => print("User added successfully!"))
     // .catchError((error) => print("Failed to add user: $error"));
   }
+
+  Future uploadPic() async {
+    Random random = Random();
+    int i = random.nextInt(100);
+    final path = 'ProfilePicture/$i.jpg';
+    final ref = FirebaseStorage.instance.ref().child(path);
+    final storageUpload1 = ref.putFile(_file1!);
+    final storageUpload2 = ref.putFile(_file2!);
+    final storageUpload3 = ref.putFile(_file3!);
+    print('$path');
+    print('pic$i.jpg');
+    //   final snapshot = await storageUploadTask.whenComplete(() {});
+
+    // final urlPicture = await snapshot.ref.getDownloadURL();
+    // print('$urlPicture');
+    // updateData(urlPicture);
+  }
+
+  Future<Widget> fetcht() async {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(dropdownValue)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        print('Document exists on the database');
+      }
+    });
+    // if (mounted) {
+    //   setState(() {
+    //     // student.clear();
+    //     for (int i = 0; i < qn.docs.length; i++) {
+    //       student.add({
+    //         'id': qn.docs[i].id,
+    //         "name": qn.docs[i]["name"],
+    //         "stdId": qn.docs[i]['studentId'],
+    //         'no': qn.docs[i]['no'],
+    //         //.attendance': qn.docs[i]['attendance'].values
+    //         //.reduce((sum, value) => sum + value),
+    //       });
+    //       // print(student);
+    //     }
+    //   });
+    // }
+
+    return Text('data');
+    // Text('data');
+  }
+  //   updateData(String urlPicture){
+  //   CollectionReference _collectionRef = FirebaseFirestore.instance.collection("users-form-data");
+  //   return _collectionRef.doc(FirebaseAuth.instance.currentUser!.email).update(
+  //       {
+  //         "url_picture": urlPicture
+  //       }
+  //       ).then((value) => Navigator.pushReplacementNamed(context, '/homepage'));
+  // }
+}
 // _getImage() async {
 //     requestPermission();
 //     print("get image");
@@ -912,4 +1057,4 @@ class _formState extends State<form> {
 
   //   });
   // }
-}
+

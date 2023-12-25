@@ -54,7 +54,7 @@ abstract class Classifier {
       _probabilityProcessor =
           TensorProcessorBuilder().add(postProcessNormalizeOp).build();
       /// load labels
-      final labelData = await rootBundle.loadString('assets/labelscpe.txt');
+      final labelData = await rootBundle.loadString('assets/resnet_num.txt');
       final labelList = labelData.split('\n');
       _labels = labelList;
       init = true;
