@@ -25,7 +25,9 @@ class _formState extends State<form> {
   String dropdownValue = '0';
   String subject = ' ';
   late Classifier _classifier;
-  List<Map> student = [];
+  List<Map> student1 = [];
+    List<Map> student2 = [];
+      List<Map> student3 = [];
   bool isLoading = false;
   bool isLoading2 = false;
   bool isLoading3 = false;
@@ -217,6 +219,9 @@ class _formState extends State<form> {
                           onChanged: (codeValue) {
                             if (mounted) {
                               setState(() {
+                                if(codeValue=='0'){
+                                  isSelected=false;
+                                }else
                                 dropdownValue = codeValue;
                                 print(dropdownValue);
                                 isSelected=true;
@@ -274,25 +279,38 @@ class _formState extends State<form> {
                                               ),
                                               SizedBox(
                                                 height: 200,
-                                                child: SingleChildScrollView(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
-                                                    children: List.generate(
-                                                        _vision.multiLabel.length,
-                                                        (index) {
-                                                      return Text(
-                                                        (index + 1).toString() +
-                                                            '. ' +
-                                                            _vision
-                                                                .multiLabel[index]
-                                                                .toString(),
-                                                        style: const TextStyle(
-                                                            fontSize: 20),
-                                                      );
-                                                    }),
-                                                  ),
-                                                ),
+                                                child: 
+                                                ListView.separated(
+                                                                scrollDirection:Axis.vertical,
+                                                                separatorBuilder:(context,index) {
+                                                                  return const Divider();
+                                                                },
+                                                                itemCount:student1.length,
+                                                                itemBuilder:(BuildContextcontext,int index) {
+                                                                  return Text('${index + 1}.${student1[index]['std']} ${student1[index]['name']}',
+                                                                    style: const TextStyle(
+                                                                    fontSize:18),
+                                                                  );
+                                                                })
+                                                // SingleChildScrollView(
+                                                //   child: Column(
+                                                //     crossAxisAlignment:
+                                                //         CrossAxisAlignment.start,
+                                                //     children: List.generate(
+                                                //         _vision.multiLabel.length,
+                                                //         (index) {
+                                                //       return Text(
+                                                //         (index + 1).toString() +
+                                                //             '. ' +
+                                                //             _vision
+                                                //                 .multiLabel[index]
+                                                //                 .toString(),
+                                                //         style: const TextStyle(
+                                                //             fontSize: 20),
+                                                //       );
+                                                //     }),
+                                                //   ),
+                                                // ),
                                               ),
                                             ],
                                           )),
@@ -338,25 +356,37 @@ class _formState extends State<form> {
                                               ),
                                               SizedBox(
                                                 height: 200,
-                                                child: SingleChildScrollView(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
-                                                    children: List.generate(
-                                                        _vision.multiLabel2.length,
-                                                        (index) {
-                                                      return Text(
-                                                        (index + 1).toString() +
-                                                            '. ' +
-                                                            _vision
-                                                                .multiLabel2[index]
-                                                                .toString(),
-                                                        style: const TextStyle(
-                                                            fontSize: 20),
-                                                      );
-                                                    }),
-                                                  ),
-                                                ),
+                                                child: ListView.separated(
+                                                                scrollDirection:Axis.vertical,
+                                                                separatorBuilder:(context,index) {
+                                                                  return const Divider();
+                                                                },
+                                                                itemCount:student2.length,
+                                                                itemBuilder:(BuildContextcontext,int index) {
+                                                                  return Text('${index + 1}.${student2[index]['std']} ${student2[index]['name']}',
+                                                                    style: const TextStyle(
+                                                                    fontSize:18),
+                                                                  );
+                                                                })
+                                                //  SingleChildScrollView(
+                                                //   child: Column(
+                                                //     crossAxisAlignment:
+                                                //         CrossAxisAlignment.start,
+                                                //     children: List.generate(
+                                                //         _vision.multiLabel2.length,
+                                                //         (index) {
+                                                //       return Text(
+                                                //         (index + 1).toString() +
+                                                //             '. ' +
+                                                //             _vision
+                                                //                 .multiLabel2[index]
+                                                //                 .toString(),
+                                                //         style: const TextStyle(
+                                                //             fontSize: 20),
+                                                //       );
+                                                //     }),
+                                                //   ),
+                                                // ),
                                               ),
                                             ],
                                           )),
@@ -402,76 +432,47 @@ class _formState extends State<form> {
                                               ),
                                               SizedBox(
                                                 height: 200,
-                                                child: Text('data')
-        //                                             FutureBuilder<Widget>(
-        // future : fetchStudennt1() ,
-        // builder: (context, snapshot) {
-        //   if (snapshot.hasData) {
-        //      return ListView.separated(
-        //                               scrollDirection: Axis.vertical,
-        //                                  separatorBuilder: (context, index) {
-        //                                 return const Divider(
-        //                                   height: 20,
-        //                                   thickness: 5,
-        //                                   indent: 20,
-        //                                   endIndent: 20,
-        //                                   // color: Colors.black,
-        //                                 );
-        //                               },
-        //                               shrinkWrap: true,
-        //                               itemCount: student.length,
-        //                               itemBuilder:(BuildContext context, int index){return Text(
-        //     '${index + 1}.${student[index]['name']}',
-        //     style: const TextStyle(fontSize: 20),
-            
-        //   );
-        //                               });}
-        //     return const Center(
-        //                               child: CircularProgressIndicator());
-        //     //  final codeItem = snapshot.data?.docs.reversed.toList();
-
-        //     // for (var code in codeItem!) {
-        //     //   student.add({
-        //     //     'id': code.id,
-        //     //     "name": code["name"],
-        //     //     "stdId": code['studentId'],
-        //     //     'no': code['no'],
-        //     //     //.attendance': qn.docs[i]['attendance'].values
-        //     //     //.reduce((sum, value) => sum + value),
-        //     //   });
-        //     //   print(index);
-        //     //   print(student[index]['name']);
-        //     // }
-          
-         
-        // })
-                                                    
-                                                  ),
-                          ]),
-                                              ),
-                                           
-                
-                            const SizedBox(
-                              height: 40,
-                            ),
-                            ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  primary: Color.fromARGB(255, 96, 255, 157)
-                                      .withOpacity(0.9),
-                                  onPrimary: Color.fromARGB(255, 255, 255, 255),
-                                  // backgroundColor: Color(0xFFFDF3ED).withOpacity(0.9),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
+                                                child:
+                                                  ListView.separated(
+                                                                scrollDirection:Axis.vertical,
+                                                                separatorBuilder:(context,index) {
+                                                                  return const Divider();
+                                                                },
+                                                                itemCount:student3.length,
+                                                                itemBuilder:(BuildContextcontext,int index) {
+                                                                  return Text('${index + 1}.${student3[index]['std']} ${student3[index]['name']}',
+                                                                    style: const TextStyle(
+                                                                    fontSize:18),
+                                                                  );
+                                                                })
+                                                )
+                                              ]),
                                   ),
-                                ),
-                                onPressed: uploadPic,
-                                label: const Text(
-                                  "ยืนยัน",
-                                  style: TextStyle(fontSize: 20),
-                                ), //label text
-                                icon: Icon(Icons.check)),
-                       
-                        ], ): Text('plese select')
+                                  const SizedBox(
+                                    height: 40,
+                                  ),
+                                  ElevatedButton.icon(
+                                      style: ElevatedButton.styleFrom(
+                                        primary:
+                                            Color.fromARGB(255, 96, 255, 157)
+                                                .withOpacity(0.9),
+                                        onPrimary:
+                                            Color.fromARGB(255, 255, 255, 255),
+                                        // backgroundColor: Color(0xFFFDF3ED).withOpacity(0.9),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                        ),
+                                      ),
+                                      onPressed: uploadPic,
+                                      label: const Text(
+                                        "ยืนยัน",
+                                        style: TextStyle(fontSize: 20),
+                                      ), //label text
+                                      icon: Icon(Icons.check)),
+                                ],
+                              )
+                            : Text('โปรดเลือกรายวิชา')
                       ],
                     ),
                   ),
@@ -517,83 +518,83 @@ class _formState extends State<form> {
       //   )
     );
   }
-  Future<Widget> fetchStudennt1() async {
-    for (int i = 0; i < _vision.multiLabel3.length; i++) {
-  QuerySnapshot qn = await _firestoreInstance
-       .collection('course')
-            .doc('ZAby5d4EbPj8vyfEgwRk')
-            .collection('students')
-            .where('studentId', isEqualTo: _vision.multiLabel3[i])
-            .get();
-         }
-            // .collection('course')
-            // .doc('ZAby5d4EbPj8vyfEgwRk')
-            // .collection('students')
-            // .where('studentId', isEqualTo: _vision.multiLabel3[index])
-            // .get();
-    if (mounted) {
-      setState(() {
-        // for (int i = 0; i < qn.docs.length; i++) {
-        //   student.add({
-        //     'id': qn.docs[i].id,
-        //     "name": qn.docs[i]["name"],
-        //     "stdId": qn.docs[i]['studentId'],
-        //     'no': qn.docs[i]['no'],
-        //     //.attendance': qn.docs[i]['attendance'].values
-        //     //.reduce((sum, value) => sum + value),
-        //   });
-        //   print(_vision.multiLabel3.length);
-        // }
+  // Future<Widget> fetchStudennt3() async {
+  //   for (int i = 0; i < _vision.multiLabel3.length; i++) {
+  // QuerySnapshot qn = await _firestoreInstance
+  //      .collection('course')
+  //           .doc('ZAby5d4EbPj8vyfEgwRk')
+  //           .collection('students')
+  //           .where('studentId', isEqualTo: _vision.multiLabel3[i])
+  //           .get();
+  //        }
+  //           // .collection('course')
+  //           // .doc('ZAby5d4EbPj8vyfEgwRk')
+  //           // .collection('students')
+  //           // .where('studentId', isEqualTo: _vision.multiLabel3[index])
+  //           // .get();
+  //   if (mounted) {
+  //     setState(() {
+  //       // for (int i = 0; i < qn.docs.length; i++) {
+  //       //   student.add({
+  //       //     'id': qn.docs[i].id,
+  //       //     "name": qn.docs[i]["name"],
+  //       //     "stdId": qn.docs[i]['studentId'],
+  //       //     'no': qn.docs[i]['no'],
+  //       //     //.attendance': qn.docs[i]['attendance'].values
+  //       //     //.reduce((sum, value) => sum + value),
+  //       //   });
+  //       //   print(_vision.multiLabel3.length);
+  //       // }
            
-      });
-    }
+  //     });
+  //   }
     
-    return ListView.builder(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        itemCount: student.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Text(
-            student[index]['stdId'] + index.toString(),
-          );
-        });
+  //   return ListView.builder(
+  //       scrollDirection: Axis.vertical,
+  //       shrinkWrap: true,
+  //       itemCount: student.length,
+  //       itemBuilder: (BuildContext context, int index) {
+  //         return Text(
+  //           student[index]['stdId'] + index.toString(),
+  //         );
+  //       });
 
-    // Text('data');
-  }
-  StreamBuilder<QuerySnapshot<Object?>> fetchStudent(int index) {
-    return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('course')
-            .doc('ZAby5d4EbPj8vyfEgwRk')
-            .collection('students')
-            .where('studentId', isEqualTo: _vision.multiLabel3[index])
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            const CircularProgressIndicator();
-          } else {
+  //   // Text('data');
+  // }
+  // StreamBuilder<QuerySnapshot<Object?>> fetchStudent(int index) {
+  //   return StreamBuilder<QuerySnapshot>(
+  //       stream: FirebaseFirestore.instance
+  //           .collection('course')
+  //           .doc('ZAby5d4EbPj8vyfEgwRk')
+  //           .collection('students')
+  //           .where('studentId', isEqualTo: _vision.multiLabel3[index])
+  //           .snapshots(),
+  //       builder: (context, snapshot) {
+  //         if (!snapshot.hasData) {
+  //           const CircularProgressIndicator();
+  //         } else {
            
-            final codeItem = snapshot.data?.docs.reversed.toList();
+  //           final codeItem = snapshot.data?.docs.reversed.toList();
 
-            for (var code in codeItem!) {
-              student.add({
-                'id': code.id,
-                "name": code["name"],
-                "stdId": code['studentId'],
-                'no': code['no'],
-                //.attendance': qn.docs[i]['attendance'].values
-                //.reduce((sum, value) => sum + value),
-              });
-              print(index);
-              print(student[index]['name']);
-            }
-          }
-          return Text(
-            '${index + 1}.${student[index]['name']}',
-            style: const TextStyle(fontSize: 20),
-          );
-        });
-  }
+  //           for (var code in codeItem!) {
+  //             student.add({
+  //               'id': code.id,
+  //               "name": code["name"],
+  //               "stdId": code['studentId'],
+  //               'no': code['no'],
+  //               //.attendance': qn.docs[i]['attendance'].values
+  //               //.reduce((sum, value) => sum + value),
+  //             });
+  //             print(index);
+  //             print(student[index]['name']);
+  //           }
+  //         }
+  //         return Text(
+  //           '${index + 1}.${student[index]['name']}',
+  //           style: const TextStyle(fontSize: 20),
+  //         );
+  //       });
+  // }
 
   StreamBuilder<QuerySnapshot<Object?>> dropdown() {
     return StreamBuilder<QuerySnapshot>(
@@ -792,10 +793,14 @@ class _formState extends State<form> {
     try {
       if (no == '1') {
         await _vision.detect(_pictureFile, '1');
+        await fetchID();
       } else if (no == '2') {
         await _vision.detect(_pictureFile, '2');
+        await fetchID2();
+
       } else if (no == '3') {
         await _vision.detect(_pictureFile, '3');
+        await fetchID3();
       }
     } on Exception catch (e) {
       print('-- Exception ' + e.toString());
@@ -871,6 +876,67 @@ class _formState extends State<form> {
 
     return Text('data');
     // Text('data');
+  }
+  
+  fetchID() async{
+   for (int i = 0; i < _vision.multiLabel.length; i++) {
+  QuerySnapshot qn = await _firestoreInstance
+       .collection('course')
+            .doc(dropdownValue)
+            .collection('students')
+            .where('studentId', isEqualTo: _vision.multiLabel[i])
+            .get();
+            print(i);
+            print(_vision.multiLabel[i]);
+            // print(qn.docs[0]['name']);
+            student1.add({
+            'id': qn.docs[0].id,
+            "std": qn.docs[0]["studentId"],
+            "name": qn.docs[0]['name'],
+          });
+          print(student1);
+            // return qn.docs;
+         }
+  }
+    fetchID2() async{
+   for (int i = 0; i < _vision.multiLabel2.length; i++) {
+  QuerySnapshot qn = await _firestoreInstance
+       .collection('course')
+            .doc(dropdownValue)
+            .collection('students')
+            .where('studentId', isEqualTo: _vision.multiLabel2[i])
+            .get();
+            print(i);
+            print(_vision.multiLabel2[i]);
+            // print(qn.docs[0]['name']);
+            student2.add({
+            'id': qn.docs[0].id,
+            "std": qn.docs[0]["studentId"],
+            "name": qn.docs[0]['name'],
+          });
+          print(student1);
+            // return qn.docs;
+         }
+  }
+    fetchID3() async{
+   for (int i = 0; i < _vision.multiLabel3.length; i++) {
+  QuerySnapshot qn = await _firestoreInstance
+       .collection('course')
+            .doc(dropdownValue)
+            .collection('students')
+            .where('studentId', isEqualTo: _vision.multiLabel3[i])
+            .get();
+            print(i);
+            print(_vision.multiLabel3[i]);
+            // print(qn.docs[0]['name']);
+            student3.add({
+            'id': qn.docs[0].id,
+            "std": qn.docs[0]["studentId"],
+            "name": qn.docs[0]['name'],
+          });
+          print(student1);
+            // return qn.docs;
+         }
   }
   //   updateData(String urlPicture){
   //   CollectionReference _collectionRef = FirebaseFirestore.instance.collection("users-form-data");
