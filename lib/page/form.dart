@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'dart:ui';
-import 'dart:io';
 import 'dart:math';
 // import 'package:image/image.dart' as img;
 import 'package:student_attendance/classifier/classifier_quant.dart';
@@ -26,8 +25,8 @@ class _formState extends State<form> {
   String subject = ' ';
   late Classifier _classifier;
   List<Map> student1 = [];
-    List<Map> student2 = [];
-      List<Map> student3 = [];
+  List<Map> student2 = [];
+  List<Map> student3 = [];
   bool isLoading = false;
   bool isLoading2 = false;
   bool isLoading3 = false;
@@ -63,23 +62,16 @@ class _formState extends State<form> {
             'teacher': qn.docs[i]['teacher']
           });
         }
-
-        courseItems
-            .add(const DropdownMenuItem(value: '0', child: Text('เลือกวิชา')));
+        courseItems.add(const DropdownMenuItem(value: '0', child: Text('เลือกวิชา')));
         for (int code = 0; code < _course.length; code++) {
-          print(code);
-          print(_course[code]['id']);
           courseItems.add(DropdownMenuItem(
               value: _course[code]['id'],
-              child: Text(
-                  _course[code]['titleTH'] + ' sec ' + _course[code]['sec'])));
+              child: Text(_course[code]['titleTH'] + ' sec ' + _course[code]['sec'])));
         }
       });
     }
-
     return qn.docs;
   }
-
   @override
   void initState() {
     super.initState();
@@ -126,7 +118,7 @@ class _formState extends State<form> {
               width: MediaQuery.of(context).size.width,
               height: 60,
               child: DecoratedBox(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: ui.Color.fromARGB(255, 255, 255, 255),
                   ),
                   child: Row(
@@ -150,34 +142,32 @@ class _formState extends State<form> {
                   )),
             ),
           ),
-          Container(
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: 60,
-              child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  color: Color(0xFFEDAB94),
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.arrow_back_ios),
-                        iconSize: 30,
-                      ),
-                      title: const Text(
-                        'เช็คชื่อเข้าเรียน',
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.normal),
-                      ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: 60,
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                color: Color(0xFFEDAB94),
+              ),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.arrow_back_ios),
+                      iconSize: 30,
                     ),
-                  ],
-                ),
+                    title: const Text(
+                      'เช็คชื่อเข้าเรียน',
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                          fontWeight: FontWeight.normal),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -188,296 +178,293 @@ class _formState extends State<form> {
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(35),
                     topRight: Radius.circular(35))),
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(children: [
-                  // for ( var i in _products) Text(i.toString()),
-                  SizedBox(
-                    child: Column(
-                      children: [
-                        DropdownButtonFormField(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 1, vertical: 1),
-                          borderRadius: BorderRadius.circular(12.0),
-                          decoration: InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(13),
-                              borderSide: const BorderSide(
-                                  color: ui.Color.fromARGB(255, 255, 255, 255),
-                                  width: 2),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(13),
-                              borderSide: const BorderSide(
-                                  color: ui.Color.fromARGB(255, 255, 255, 255),
-                                  width: 3),
-                            ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(children: [
+                // for ( var i in _products) Text(i.toString()),
+                SizedBox(
+                  child: Column(
+                    children: [
+                      DropdownButtonFormField(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 1, vertical: 1),
+                        borderRadius: BorderRadius.circular(12.0),
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(13),
+                            borderSide: const BorderSide(
+                                color: ui.Color.fromARGB(255, 255, 255, 255),
+                                width: 2),
                           ),
-                          items: courseItems,
-                          value: dropdownValue,
-                          onChanged: (codeValue) {
-                            if (mounted) {
-                              setState(() {
-                                if(codeValue=='0'){
-                                  isSelected=false;
-                                }else
-                                dropdownValue = codeValue;
-                                print(dropdownValue);
-                                isSelected=true;
-                                // subject = codeValue['titleTH'];
-                              });
-                            }
-                          },
-                          isExpanded: false,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(13),
+                            borderSide: const BorderSide(
+                                color: ui.Color.fromARGB(255, 255, 255, 255),
+                                width: 3),
+                          ),
                         ),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        isSelected?Column(
-                          children: [
-                            const Text('ครั้งที่'),
-                            const SizedBox(
-                              height: 40,
-                            ),
-                            Container(
-                                child: isLoading
-                                    ? const Center(
-                                        child: CircularProgressIndicator(
-                                        backgroundColor: Color(0xFFFDF3ED),
-                                        valueColor: AlwaysStoppedAnimation<Color>(
-                                          ui.Color.fromARGB(
-                                              255, 255, 255, 255), //<-- SEE HERE
-                                        ),
-                                      ))
-                                    : (_image1 == null)
-                                        ? Center(
-                                            child: SizedBox(
-                                                height: 120,
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                child: pickImageBtn(context, '1')))
-                                        : Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              FittedBox(
-                                                child: SizedBox(
-                                                    width:
-                                                        _image1!.width.toDouble(),
-                                                    height:
-                                                        _image1!.height.toDouble(),
-                                                    child: CustomPaint(
-                                                      painter: VisionPainter(
-                                                          _vision,
-                                                          Size(349, 349),
-                                                          Size(411, 866.0),
-                                                          _image1!,
-                                                          '1'),
-                                                    )),
-                                              ),
-                                              SizedBox(
-                                                height: 200,
-                                                child: 
-                                                ListView.separated(
-                                                                scrollDirection:Axis.vertical,
-                                                                separatorBuilder:(context,index) {
-                                                                  return const Divider();
-                                                                },
-                                                                itemCount:student1.length,
-                                                                itemBuilder:(BuildContextcontext,int index) {
-                                                                  return Text('${index + 1}.${student1[index]['std']} ${student1[index]['name']}',
-                                                                    style: const TextStyle(
-                                                                    fontSize:18),
-                                                                  );
-                                                                })
-                                                // SingleChildScrollView(
-                                                //   child: Column(
-                                                //     crossAxisAlignment:
-                                                //         CrossAxisAlignment.start,
-                                                //     children: List.generate(
-                                                //         _vision.multiLabel.length,
-                                                //         (index) {
-                                                //       return Text(
-                                                //         (index + 1).toString() +
-                                                //             '. ' +
-                                                //             _vision
-                                                //                 .multiLabel[index]
-                                                //                 .toString(),
-                                                //         style: const TextStyle(
-                                                //             fontSize: 20),
-                                                //       );
-                                                //     }),
-                                                //   ),
-                                                // ),
-                                              ),
-                                            ],
-                                          )),
-                            const SizedBox(
-                              height: 40,
-                            ),
-                            Container(
-                                child: isLoading2
-                                    ? const Center(
-                                        child: CircularProgressIndicator(
-                                        backgroundColor: Color(0xFFEDAB94),
-                                        valueColor: AlwaysStoppedAnimation<Color>(
-                                          ui.Color.fromARGB(
-                                              255, 255, 255, 255), //<-- SEE HERE
-                                        ),
-                                      ))
-                                    : (_image2 == null)
-                                        ? Center(
-                                            child: SizedBox(
-                                                height: 120,
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                child: pickImageBtn(context, '2')))
-                                        : Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              FittedBox(
-                                                child: SizedBox(
-                                                    width:
-                                                        _image2!.width.toDouble(),
-                                                    height:
-                                                        _image2!.height.toDouble(),
-                                                    child: CustomPaint(
-                                                      painter: VisionPainter(
-                                                          _vision,
-                                                          Size(349, 349),
-                                                          Size(411, 866.0),
-                                                          _image2!,
-                                                          '2'),
-                                                    )),
-                                              ),
-                                              SizedBox(
-                                                height: 200,
-                                                child: ListView.separated(
-                                                                scrollDirection:Axis.vertical,
-                                                                separatorBuilder:(context,index) {
-                                                                  return const Divider();
-                                                                },
-                                                                itemCount:student2.length,
-                                                                itemBuilder:(BuildContextcontext,int index) {
-                                                                  return Text('${index + 1}.${student2[index]['std']} ${student2[index]['name']}',
-                                                                    style: const TextStyle(
-                                                                    fontSize:18),
-                                                                  );
-                                                                })
-                                                //  SingleChildScrollView(
-                                                //   child: Column(
-                                                //     crossAxisAlignment:
-                                                //         CrossAxisAlignment.start,
-                                                //     children: List.generate(
-                                                //         _vision.multiLabel2.length,
-                                                //         (index) {
-                                                //       return Text(
-                                                //         (index + 1).toString() +
-                                                //             '. ' +
-                                                //             _vision
-                                                //                 .multiLabel2[index]
-                                                //                 .toString(),
-                                                //         style: const TextStyle(
-                                                //             fontSize: 20),
-                                                //       );
-                                                //     }),
-                                                //   ),
-                                                // ),
-                                              ),
-                                            ],
-                                          )),
-                            const SizedBox(
-                              height: 40,
-                            ),
-                            Container(
-                                child: isLoading3
-                                    ? const Center(
-                                        child: CircularProgressIndicator(
-                                        backgroundColor: Color(0xFFEDAB94),
-                                        valueColor: AlwaysStoppedAnimation<Color>(
-                                          ui.Color.fromARGB(
-                                              255, 255, 255, 255), //<-- SEE HERE
-                                        ),
-                                      ))
-                                    : (_image3 == null)
-                                        ? Center(
-                                            child: SizedBox(
-                                                height: 120,
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                child: pickImageBtn(context, '3')))
-                                        : Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              FittedBox(
-                                                child: SizedBox(
-                                                    width:
-                                                        _image3!.width.toDouble(),
-                                                    height:
-                                                        _image3!.height.toDouble(),
-                                                    child: CustomPaint(
-                                                      painter: VisionPainter(
-                                                          _vision,
-                                                          Size(349, 349),
-                                                          Size(411, 866.0),
-                                                          _image3!,
-                                                          '3'),
-                                                    )),
-                                              ),
-                                              SizedBox(
-                                                height: 200,
-                                                child:
-                                                  ListView.separated(
-                                                                scrollDirection:Axis.vertical,
-                                                                separatorBuilder:(context,index) {
-                                                                  return const Divider();
-                                                                },
-                                                                itemCount:student3.length,
-                                                                itemBuilder:(BuildContextcontext,int index) {
-                                                                  return Text('${index + 1}.${student3[index]['std']} ${student3[index]['name']}',
-                                                                    style: const TextStyle(
-                                                                    fontSize:18),
-                                                                  );
-                                                                })
-                                                )
-                                              ]),
-                                  ),
-                                  const SizedBox(
-                                    height: 40,
-                                  ),
-                                  ElevatedButton.icon(
-                                      style: ElevatedButton.styleFrom(
-                                        primary:
-                                            Color.fromARGB(255, 96, 255, 157)
-                                                .withOpacity(0.9),
-                                        onPrimary:
-                                            Color.fromARGB(255, 255, 255, 255),
-                                        // backgroundColor: Color(0xFFFDF3ED).withOpacity(0.9),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20.0),
-                                        ),
+                        items: courseItems,
+                        value: dropdownValue,
+                        onChanged: (codeValue) {
+                          if (mounted) {
+                            setState(() {
+                              print(codeValue);
+                              dropdownValue = codeValue;
+                              if(dropdownValue=='0'){
+                                isSelected=false;
+                              }else
+                              isSelected=true;
+                            });
+                          }
+                        },
+                        isExpanded: false,
+                      ),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      isSelected?Column(
+                        children: [
+                          const Text('ครั้งที่ XX'),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          Container(
+                              child: isLoading
+                                  ? const Center(
+                                      child: CircularProgressIndicator(
+                                      backgroundColor: Color(0xFFFDF3ED),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        ui.Color.fromARGB(
+                                            255, 255, 255, 255), //<-- SEE HERE
                                       ),
-                                      onPressed: uploadPic,
-                                      label: const Text(
-                                        "ยืนยัน",
-                                        style: TextStyle(fontSize: 20),
-                                      ), //label text
-                                      icon: Icon(Icons.check)),
-                                ],
-                              )
-                            : Text('โปรดเลือกรายวิชา')
-                      ],
-                    ),
+                                    ))
+                                  : (_image1 == null)
+                                      ? Center(
+                                          child: SizedBox(
+                                              height: 120,
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              child: pickImageBtn(context, '1')))
+                                      : Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            FittedBox(
+                                              child: SizedBox(
+                                                  width:
+                                                      _image1!.width.toDouble(),
+                                                  height:
+                                                      _image1!.height.toDouble(),
+                                                  child: CustomPaint(
+                                                    painter: VisionPainter(
+                                                        _vision,
+                                                        Size(349, 349),
+                                                        Size(411, 866.0),
+                                                        _image1!,
+                                                        '1'),
+                                                  )),
+                                            ),
+                                            SizedBox(
+                                              height: 200,
+                                              child: 
+                                              ListView.separated(
+                                                              scrollDirection:Axis.vertical,
+                                                              separatorBuilder:(context,index) {
+                                                                return const Divider();
+                                                              },
+                                                              itemCount:student1.length,
+                                                              itemBuilder:(BuildContextcontext,int index) {
+                                                                return Text('${index + 1}.${student1[index]['std']} ${student1[index]['name']}',
+                                                                  style: const TextStyle(
+                                                                  fontSize:15),
+                                                                );
+                                                              })
+                                              // SingleChildScrollView(
+                                              //   child: Column(
+                                              //     crossAxisAlignment:
+                                              //         CrossAxisAlignment.start,
+                                              //     children: List.generate(
+                                              //         _vision.multiLabel.length,
+                                              //         (index) {
+                                              //       return Text(
+                                              //         (index + 1).toString() +
+                                              //             '. ' +
+                                              //             _vision
+                                              //                 .multiLabel[index]
+                                              //                 .toString(),
+                                              //         style: const TextStyle(
+                                              //             fontSize: 20),
+                                              //       );
+                                              //     }),
+                                              //   ),
+                                              // ),
+                                            ),
+                                          ],
+                                        )),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          Container(
+                              child: isLoading2
+                                  ? const Center(
+                                      child: CircularProgressIndicator(
+                                      backgroundColor: Color(0xFFEDAB94),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        ui.Color.fromARGB(
+                                            255, 255, 255, 255), //<-- SEE HERE
+                                      ),
+                                    ))
+                                  : (_image2 == null)
+                                      ? Center(
+                                          child: SizedBox(
+                                              height: 120,
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              child: pickImageBtn(context, '2')))
+                                      : Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            FittedBox(
+                                              child: SizedBox(
+                                                  width:
+                                                      _image2!.width.toDouble(),
+                                                  height:
+                                                      _image2!.height.toDouble(),
+                                                  child: CustomPaint(
+                                                    painter: VisionPainter(
+                                                        _vision,
+                                                        Size(349, 349),
+                                                        Size(411, 866.0),
+                                                        _image2!,
+                                                        '2'),
+                                                  )),
+                                            ),
+                                            SizedBox(
+                                              height: 200,
+                                              child: ListView.separated(
+                                                              scrollDirection:Axis.vertical,
+                                                              separatorBuilder:(context,index) {
+                                                                return const Divider();
+                                                              },
+                                                              itemCount:student2.length,
+                                                              itemBuilder:(BuildContextcontext,int index) {
+                                                                return Text('${index + 1}.${student2[index]['std']} ${student2[index]['name']}',
+                                                                  style: const TextStyle(
+                                                                  fontSize:15),
+                                                                );
+                                                              })
+                                              //  SingleChildScrollView(
+                                              //   child: Column(
+                                              //     crossAxisAlignment:
+                                              //         CrossAxisAlignment.start,
+                                              //     children: List.generate(
+                                              //         _vision.multiLabel2.length,
+                                              //         (index) {
+                                              //       return Text(
+                                              //         (index + 1).toString() +
+                                              //             '. ' +
+                                              //             _vision
+                                              //                 .multiLabel2[index]
+                                              //                 .toString(),
+                                              //         style: const TextStyle(
+                                              //             fontSize: 20),
+                                              //       );
+                                              //     }),
+                                              //   ),
+                                              // ),
+                                            ),
+                                          ],
+                                        )),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          Container(
+                              child: isLoading3
+                                  ? const Center(
+                                      child: CircularProgressIndicator(
+                                      backgroundColor: Color(0xFFEDAB94),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        ui.Color.fromARGB(
+                                            255, 255, 255, 255), //<-- SEE HERE
+                                      ),
+                                    ))
+                                  : (_image3 == null)
+                                      ? Center(
+                                          child: SizedBox(
+                                              height: 120,
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              child: pickImageBtn(context, '3')))
+                                      : Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            FittedBox(
+                                              child: SizedBox(
+                                                  width:
+                                                      _image3!.width.toDouble(),
+                                                  height:
+                                                      _image3!.height.toDouble(),
+                                                  child: CustomPaint(
+                                                    painter: VisionPainter(
+                                                        _vision,
+                                                        Size(349, 349),
+                                                        Size(411, 866.0),
+                                                        _image3!,
+                                                        '3'),
+                                                  )),
+                                            ),
+                                            SizedBox(
+                                              height: 200,
+                                              child:
+                                                ListView.separated(
+                                                              scrollDirection:Axis.vertical,
+                                                              separatorBuilder:(context,index) {
+                                                                return const Divider();
+                                                              },
+                                                              itemCount:student3.length,
+                                                              itemBuilder:(BuildContextcontext,int index) {
+                                                                return Text('${index + 1}.${student3[index]['std']} ${student3[index]['name']}',
+                                                                  style: const TextStyle(
+                                                                  fontSize:15),
+                                                                );
+                                                              })
+                                              )
+                                            ]),
+                                ),
+                                const SizedBox(
+                                  height: 40,
+                                ),
+                                ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      primary:
+                                          Color.fromARGB(255, 96, 255, 157)
+                                              .withOpacity(0.9),
+                                      onPrimary:
+                                          Color.fromARGB(255, 255, 255, 255),
+                                      // backgroundColor: Color(0xFFFDF3ED).withOpacity(0.9),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                      ),
+                                    ),
+                                    onPressed: uploadPic,
+                                    label: const Text(
+                                      "ยืนยัน",
+                                      style: TextStyle(fontSize: 20),
+                                    ), //label text
+                                    icon: Icon(Icons.check)),
+                              ],
+                            )
+                          : Text('โปรดเลือกรายวิชา')
+                    ],
                   ),
-                ]),
-              ),
+                ),
+              ]),
             ),
           ))
         ],
@@ -610,11 +597,13 @@ class _formState extends State<form> {
             final codeItem = snapshot.data?.docs.reversed.toList();
             codeItems.add(
                 const DropdownMenuItem(value: '0', child: Text('เลือกวิชา')));
+                      //  print(codeItem);
             for (var code in codeItem!) {
               codeItems.add(DropdownMenuItem(
                   value: code.id,
                   child: Text(code['titleTH'] + ' sec ' + code['sec'])));
             }
+     
           }
           return SizedBox(
             child: Column(
@@ -644,7 +633,8 @@ class _formState extends State<form> {
                       setState(() {
                         dropdownValue = codeValue;
 
-                        print(dropdownValue);
+                        // print(dropdownValue);
+                 
                         // subject = codeValue['titleTH'];
                       });
                     }
@@ -878,74 +868,62 @@ class _formState extends State<form> {
     // Text('data');
   }
   
-  fetchID() async{
-   for (int i = 0; i < _vision.multiLabel.length; i++) {
-  QuerySnapshot qn = await _firestoreInstance
-       .collection('course')
-            .doc(dropdownValue)
-            .collection('students')
-            .where('studentId', isEqualTo: _vision.multiLabel[i])
-            .get();
-            print(i);
-            print(_vision.multiLabel[i]);
-            // print(qn.docs[0]['name']);
-            student1.add({
-            'id': qn.docs[0].id,
-            "std": qn.docs[0]["studentId"],
-            "name": qn.docs[0]['name'],
-          });
-          print(student1);
-            // return qn.docs;
-         }
+  fetchID() async {
+    for (int i = 0; i < _vision.multiLabel.length; i++) {
+      QuerySnapshot qn = await _firestoreInstance
+          .collection('course')
+          .doc(dropdownValue)
+          .collection('students')
+          .where('studentId', isEqualTo: _vision.multiLabel[i])
+          .get();
+      // print(i);
+      // print(_vision.multiLabel[i]);
+      for (int i = 0; i < qn.docs.length; i++) {
+        student1.add({
+          'id': qn.docs[0].id,
+          "std": qn.docs[0]["studentId"],
+          "name": qn.docs[0]['name'],
+        });
+      }
+      // return qn.docs;
+    }
   }
-    fetchID2() async{
-   for (int i = 0; i < _vision.multiLabel2.length; i++) {
-  QuerySnapshot qn = await _firestoreInstance
-       .collection('course')
-            .doc(dropdownValue)
-            .collection('students')
-            .where('studentId', isEqualTo: _vision.multiLabel2[i])
-            .get();
-            print(i);
-            print(_vision.multiLabel2[i]);
-            // print(qn.docs[0]['name']);
-            student2.add({
-            'id': qn.docs[0].id,
-            "std": qn.docs[0]["studentId"],
-            "name": qn.docs[0]['name'],
-          });
-          print(student1);
-            // return qn.docs;
-         }
+  fetchID2() async {
+    for (int i = 0; i < _vision.multiLabel2.length; i++) {
+      QuerySnapshot qn = await _firestoreInstance
+          .collection('course')
+          .doc(dropdownValue)
+          .collection('students')
+          .where('studentId', isEqualTo: _vision.multiLabel2[i])
+          .get();
+      for (int i = 0; i < qn.docs.length; i++) {
+        student2.add({
+          'id': qn.docs[0].id,
+          "std": qn.docs[0]["studentId"],
+          "name": qn.docs[0]['name'],
+        });
+      }
+    }
   }
-    fetchID3() async{
-   for (int i = 0; i < _vision.multiLabel3.length; i++) {
-  QuerySnapshot qn = await _firestoreInstance
-       .collection('course')
-            .doc(dropdownValue)
-            .collection('students')
-            .where('studentId', isEqualTo: _vision.multiLabel3[i])
-            .get();
-            print(i);
-            print(_vision.multiLabel3[i]);
-            // print(qn.docs[0]['name']);
-            student3.add({
-            'id': qn.docs[0].id,
-            "std": qn.docs[0]["studentId"],
-            "name": qn.docs[0]['name'],
-          });
-          print(student1);
-            // return qn.docs;
-         }
+  fetchID3() async {
+    for (int i = 0; i < _vision.multiLabel3.length; i++) {
+      QuerySnapshot qn = await _firestoreInstance
+          .collection('course')
+          .doc(dropdownValue)
+          .collection('students')
+          .where('studentId', isEqualTo: _vision.multiLabel3[i])
+          .get();
+      print(i);
+      print(_vision.multiLabel3[i]);
+      for (int i = 0; i < qn.docs.length; i++) {
+        student3.add({
+          'id': qn.docs[0].id,
+          "std": qn.docs[0]["studentId"],
+          "name": qn.docs[0]['name'],
+        });
+      }
+    }
   }
-  //   updateData(String urlPicture){
-  //   CollectionReference _collectionRef = FirebaseFirestore.instance.collection("users-form-data");
-  //   return _collectionRef.doc(FirebaseAuth.instance.currentUser!.email).update(
-  //       {
-  //         "url_picture": urlPicture
-  //       }
-  //       ).then((value) => Navigator.pushReplacementNamed(context, '/homepage'));
-  // }
 }
 // _getImage() async {
 //     requestPermission();

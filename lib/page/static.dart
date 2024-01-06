@@ -105,6 +105,7 @@ class _staticPageState extends State<staticPage> {
                 color: Color(0xFFEDAB94),
               ),
               child: Column(
+                
                 children: [
                   ListTile(
                     leading: IconButton(
@@ -176,6 +177,9 @@ class _staticPageState extends State<staticPage> {
                     });};
                   },
                   isExpanded: false,
+                ),
+                const SizedBox(
+                          height: 40,
                 ),
                 isSelect
                     ? Column(
@@ -272,7 +276,7 @@ class _staticPageState extends State<staticPage> {
                               icon: Icon(Icons.download))
                         ],
                       )
-                    : Text('select ')
+                    : Text('โปรดเลือกรายวิชา')
               ],
             ),
           ))

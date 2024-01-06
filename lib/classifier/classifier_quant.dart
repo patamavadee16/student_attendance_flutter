@@ -5,7 +5,7 @@ class ClassifierQuant extends Classifier {
   ClassifierQuant({int numThreads= 1}) : super(numThreads: numThreads);
 
   @override
-  String get modelName => 'resnet30_quant_model_22_dec.tflite';
+  String get modelName => 'resnet30_quant_model_6_Jan.tflite';
 
   @override
   NormalizeOp get preProcessNormalizeOp => NormalizeOp(0, 1);

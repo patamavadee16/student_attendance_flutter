@@ -175,7 +175,7 @@ class VisionPainter extends CustomPainter {
   late Canvas _canvas;
   double _textTop = 240.0;
   double _textLeft = 30.0;
-  double _fontSize =40;
+  double _fontSize =36;
   double _fontHeight = 50;
 
   @override
@@ -204,15 +204,17 @@ if (vision.type == VisionType.TENSOR) {
             if(no=='1'){
             for (TfResult res in vision.results) {
             canvas.drawRect(res.rect, _paint);
-            String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
+            String outputLabel = res.outputs[0].label;
+            // String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
             drawText(Offset(res.rect.left, res.rect.top - _fontHeight), outputLabel, _fontSize);
 
           }
             }else if(no=='2'){
                        for (TfResult res in vision.results2) {
             canvas.drawRect(res.rect, _paint);
-            String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
-            drawText(Offset(res.rect.left, res.rect.top - _fontHeight), outputLabel, _fontSize);
+            String outputLabel = res.outputs[0].label;
+            // String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
+            drawText(Offset(res.rect.left, res.rect.top - _fontHeight), outputLabel,20);
 
           }
             }else if(no=='3'){
