@@ -206,7 +206,7 @@ if (vision.type == VisionType.TENSOR) {
             canvas.drawRect(res.rect, _paint);
             String outputLabel = res.outputs[0].label;
             // String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
-            drawText(Offset(res.rect.left, res.rect.top - _fontHeight), outputLabel, _fontSize);
+            drawText(Offset(res.rect.left, res.rect.top - _fontHeight), outputLabel, 25);
 
           }
             }else if(no=='2'){
@@ -214,13 +214,14 @@ if (vision.type == VisionType.TENSOR) {
             canvas.drawRect(res.rect, _paint);
             String outputLabel = res.outputs[0].label;
             // String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
-            drawText(Offset(res.rect.left, res.rect.top - _fontHeight), outputLabel,20);
+            drawText(Offset(res.rect.left, res.rect.top - _fontHeight), outputLabel,36);
 
           }
             }else if(no=='3'){
                           for (TfResult res in vision.results3) {
             canvas.drawRect(res.rect, _paint);
-            String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
+            // String outputLabel = (res.outputs[0].score).toStringAsFixed(3).toString() + " " + res.outputs[0].label;
+            String outputLabel =  res.outputs[0].label;
             drawText(Offset(res.rect.left, res.rect.top - _fontHeight), outputLabel, _fontSize);
 
           }

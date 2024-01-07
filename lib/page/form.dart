@@ -37,7 +37,6 @@ class _formState extends State<form> {
   File? _file1;
   File? _file2;
   File? _file3;
-  List<String> multiLabel = [];
   final picker = ImagePicker();
   VisionAdapter _vision = VisionAdapter();
   TfResult? tflite;
@@ -130,14 +129,13 @@ class _formState extends State<form> {
                         width: 70,
                         height: 60,
                       ),
-                      Container(
-                          child: const Column(
+                      const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('FACE  RECOGNITION'),
-                          Text('ATTENDANCE')
+                      Text('FACE  RECOGNITION'),
+                      Text('ATTENDANCE')
                         ],
-                      )),
+                      ),
                     ],
                   )),
             ),
@@ -208,12 +206,13 @@ class _formState extends State<form> {
                         onChanged: (codeValue) {
                           if (mounted) {
                             setState(() {
-                              print(codeValue);
+                              // print(codeValue);
                               dropdownValue = codeValue;
                               if(dropdownValue=='0'){
                                 isSelected=false;
-                              }else
-                              isSelected=true;
+                              }else {
+                                isSelected=true;
+                              }
                             });
                           }
                         },
@@ -235,7 +234,7 @@ class _formState extends State<form> {
                                       backgroundColor: Color(0xFFFDF3ED),
                                       valueColor: AlwaysStoppedAnimation<Color>(
                                         ui.Color.fromARGB(
-                                            255, 255, 255, 255), //<-- SEE HERE
+                                            255, 255, 255, 255), 
                                       ),
                                     ))
                                   : (_image1 == null)
@@ -247,39 +246,34 @@ class _formState extends State<form> {
                                                   .width,
                                               child: pickImageBtn(context, '1')))
                                       : Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment:CrossAxisAlignment.start,
                                           children: [
                                             FittedBox(
-                                              child: SizedBox(
-                                                  width:
-                                                      _image1!.width.toDouble(),
-                                                  height:
-                                                      _image1!.height.toDouble(),
-                                                  child: CustomPaint(
-                                                    painter: VisionPainter(
-                                                        _vision,
-                                                        Size(349, 349),
-                                                        Size(411, 866.0),
-                                                        _image1!,
-                                                        '1'),
-                                                  )),
+                                                    child: InteractiveViewer(
+                                                      panEnabled:true, // Set it to false
+                                                      minScale: 0.5,
+                                                      maxScale: 2,
+                                                child: SizedBox(
+                                                    width:_image1!.width.toDouble(),
+                                                    height:_image1!.height.toDouble(),
+                                                    child: CustomPaint(
+                                                      painter: VisionPainter(_vision,Size(349, 349),Size(411, 866.0),_image1!,'1'),
+                                                    )),
+                                              ),
                                             ),
                                             SizedBox(
                                               height: 200,
-                                              child: 
-                                              ListView.separated(
-                                                              scrollDirection:Axis.vertical,
-                                                              separatorBuilder:(context,index) {
-                                                                return const Divider();
-                                                              },
-                                                              itemCount:student1.length,
-                                                              itemBuilder:(BuildContextcontext,int index) {
-                                                                return Text('${index + 1}.${student1[index]['std']} ${student1[index]['name']}',
-                                                                  style: const TextStyle(
-                                                                  fontSize:15),
+                                              child: ListView.separated(
+                                                      scrollDirection:Axis.vertical,
+                                                      separatorBuilder:(context,index) {
+                                                        return const Divider();
+                                                      },
+                                                      itemCount:student1.length,
+                                                      itemBuilder:(BuildContextcontext,int index) {
+                                                        return Text('${index + 1}.${student1[index]['std']} ${student1[index]['name']}',
+                                                                  style: const TextStyle(fontSize:15),
                                                                 );
-                                                              })
+                                                      })
                                               // SingleChildScrollView(
                                               //   child: Column(
                                               //     crossAxisAlignment:
@@ -319,43 +313,37 @@ class _formState extends State<form> {
                                       ? Center(
                                           child: SizedBox(
                                               height: 120,
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
+                                              width: MediaQuery.of(context).size.width,
                                               child: pickImageBtn(context, '2')))
                                       : Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             FittedBox(
-                                              child: SizedBox(
-                                                  width:
-                                                      _image2!.width.toDouble(),
-                                                  height:
-                                                      _image2!.height.toDouble(),
-                                                  child: CustomPaint(
-                                                    painter: VisionPainter(
-                                                        _vision,
-                                                        Size(349, 349),
-                                                        Size(411, 866.0),
-                                                        _image2!,
-                                                        '2'),
-                                                  )),
+                                              child: InteractiveViewer(
+                                                      panEnabled:true, // Set it to false
+                                                      minScale: 0.5,
+                                                      maxScale: 2,
+                                                child: SizedBox(
+                                                    width:_image2!.width.toDouble(),
+                                                    height:_image2!.height.toDouble(),
+                                                    child: CustomPaint(painter: VisionPainter(_vision,Size(349, 349),Size(411, 866.0),_image2!,'2'),
+                                                    )),
+                                              ),
                                             ),
                                             SizedBox(
                                               height: 200,
                                               child: ListView.separated(
-                                                              scrollDirection:Axis.vertical,
-                                                              separatorBuilder:(context,index) {
-                                                                return const Divider();
-                                                              },
-                                                              itemCount:student2.length,
-                                                              itemBuilder:(BuildContextcontext,int index) {
-                                                                return Text('${index + 1}.${student2[index]['std']} ${student2[index]['name']}',
-                                                                  style: const TextStyle(
-                                                                  fontSize:15),
-                                                                );
-                                                              })
+                                                      scrollDirection:Axis.vertical,
+                                                      separatorBuilder:(context,index) {
+                                                        return const Divider();
+                                                      },
+                                                      itemCount:student2.length,
+                                                      itemBuilder:(BuildContextcontext,int index) {
+                                                        return Text('${index + 1}.${student2[index]['std']} ${student2[index]['name']}',
+                                                          style: const TextStyle(
+                                                          fontSize:15),
+                                                          );
+                                                      })
                                               //  SingleChildScrollView(
                                               //   child: Column(
                                               //     crossAxisAlignment:
@@ -395,44 +383,38 @@ class _formState extends State<form> {
                                       ? Center(
                                           child: SizedBox(
                                               height: 120,
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
+                                              width: MediaQuery.of(context).size.width,
                                               child: pickImageBtn(context, '3')))
                                       : Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment:CrossAxisAlignment.start,
                                           children: [
                                             FittedBox(
-                                              child: SizedBox(
-                                                  width:
-                                                      _image3!.width.toDouble(),
-                                                  height:
-                                                      _image3!.height.toDouble(),
-                                                  child: CustomPaint(
-                                                    painter: VisionPainter(
-                                                        _vision,
-                                                        Size(349, 349),
-                                                        Size(411, 866.0),
-                                                        _image3!,
-                                                        '3'),
-                                                  )),
+                                              child:InteractiveViewer(
+                                                      panEnabled:true, // Set it to false
+                                                      minScale: 0.5,
+                                                      maxScale: 2,
+                                                child: SizedBox(
+                                                    width: _image3!.width.toDouble(),
+                                                    height:_image3!.height.toDouble(),
+                                                    child: CustomPaint(
+                                                      painter: VisionPainter(_vision,Size(349, 349),Size(411, 866.0),_image3!,'3'),
+                                                    )),
+                                              ),
                                             ),
                                             SizedBox(
                                               height: 200,
-                                              child:
-                                                ListView.separated(
-                                                              scrollDirection:Axis.vertical,
-                                                              separatorBuilder:(context,index) {
-                                                                return const Divider();
-                                                              },
-                                                              itemCount:student3.length,
-                                                              itemBuilder:(BuildContextcontext,int index) {
-                                                                return Text('${index + 1}.${student3[index]['std']} ${student3[index]['name']}',
-                                                                  style: const TextStyle(
-                                                                  fontSize:15),
-                                                                );
-                                                              })
+                                              child:ListView.separated(
+                                                      scrollDirection:Axis.vertical,
+                                                      separatorBuilder:(context,index) {
+                                                        return const Divider();
+                                                      },
+                                                      itemCount:student3.length,
+                                                      itemBuilder:(BuildContextcontext,int index) {
+                                                        return Text('${index + 1}.${student3[index]['std']} ${student3[index]['name']}',
+                                                          style: const TextStyle(
+                                                          fontSize:15),
+                                                          );
+                                                      })
                                               )
                                             ]),
                                 ),
@@ -632,10 +614,6 @@ class _formState extends State<form> {
                     if (mounted) {
                       setState(() {
                         dropdownValue = codeValue;
-
-                        // print(dropdownValue);
-                 
-                        // subject = codeValue['titleTH'];
                       });
                     }
                   },
@@ -865,7 +843,6 @@ class _formState extends State<form> {
     // }
 
     return Text('data');
-    // Text('data');
   }
   
   fetchID() async {

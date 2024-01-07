@@ -81,8 +81,9 @@ flutter:
       - assets/resnet_num.txt
       - assets/resnet30_quant_model_6_Jan.tflite
       - assets/resnet30_quant_model_6_Jan_resize.tflite
-      - assets/eff_model_6_Jan.tflite
+      - assets/resnet30_quant_model_6_Jan_2.tflite
       - assets/eff_model_6_Jan_resize.tflite
+      - assets/resnet30_quant_model_6_Jan_3.tflite
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
