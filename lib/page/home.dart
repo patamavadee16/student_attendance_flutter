@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:student_attendance/page/form.dart';
 import 'package:student_attendance/page/static.dart';
-
+import 'package:student_attendance/page/formStep.dart';
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -102,7 +102,7 @@ class _HomeState extends State<Home> {
               onPressed: () {
                 Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const form()),
+                MaterialPageRoute(builder: (context) =>  StepperExample()),
                 );
                },
               child: Container(
